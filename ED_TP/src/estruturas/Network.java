@@ -4,6 +4,7 @@
  */
 package estruturas;
 
+import interfacesADT.UnorderedListADT;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -142,75 +143,105 @@ public class Network<T> implements NetworkADT<T> {
     
     @Override
     public Iterator iteratorBFS(T startVertex) throws Exception {
-        Integer x;
-        LinkedQueue<Integer> traversalQueue = new LinkedQueue<Integer>();
+        
+        Integer x; //variavel que vai armazenar o indice atual durante a travessia
+        
+        LinkedQueue<Integer> travessalQueue = new LinkedQueue<Integer>();
         ArrayUnorderedList<T> resultList = new ArrayUnorderedList<T>();
+        
+        /*
+        Verifica se o index é valido se nao for entao retorna o iterador vazio
+        */
         int startIndex = getIndex(startVertex);
-        if (!indexIsValid(startIndex))
+        if (!indexIsValid(startIndex)) {
             return resultList.iterator();
+        }
+        
+        /*
+        Cria um array boolean  e coloca todos os vertices la como nao visitados
+        */
         boolean[] visited = new boolean[numVertices];
-        for (int i = 0; i < numVertices; i++)
+        for (int i = 0; i < numVertices; i++) {
             visited[i] = false;
-
-        traversalQueue.enqueue(new Integer(startIndex));
+        }
+        
+        /*
+        Coloca a posicao do startVertex na queue e marca a posicao como visitado
+        */
+        travessalQueue.enqueue(new Integer(startIndex));
         visited[startIndex] = true;
-
-        while (!traversalQueue.isEmpty()) {
-            x = traversalQueue.dequeue();
+        
+        /*
+        Faz o while ate esvaziar a queue
+        */
+        while (!travessalQueue.isEmpty()) {
+            
+            /*
+            Retira da queue e guarda na variavel x depois e guarda no ArrayUnorderedList
+            */
+            x = travessalQueue.dequeue();
             resultList.addToRear(vertices[x.intValue()]);
             
+            /*
+            adiciona os vertices adjacentes de x na queue e marca como visited
+            */
             for (int i = 0; i < numVertices; i++) {
-                if (adjMatrix[x.intValue()][i] && !visited[i]) {
-                    traversalQueue.enqueue(new Integer(i));
+                
+                double weight = getEdgeWeight(x, i);
+                if (weight > 0 && !visited[i]) {
+                    travessalQueue.enqueue(new Integer(i));
                     visited[i] = true;
                 }
+                
             }
+            
         }
+        
         return resultList.iterator();
     }
  
     @Override
     public Iterator iteratorDFS(T startVertex) throws Exception {
+        
         Integer x;
         boolean found;
         LinkedStack<Integer> traversalStack = new LinkedStack<Integer>();
-        ArrayUnorderedList<T> resultList = new ArrayUnorderedList<T>();
-        boolean[] visited = new boolean[numVertices];
+        ArrayUnorderedList<T> resultList = new ArrayUnorderedList<>();
+        
         int startIndex = getIndex(startVertex);
-
         if (!indexIsValid(startIndex)) {
             return resultList.iterator();
         }
-
-        for (int i = 0; i < numVertices; i++) {
+        
+        boolean visited[] = new boolean[numVertices];
+        for (int i = 0; i < numVertices; i++){
             visited[i] = false;
         }
-
         traversalStack.push(new Integer(startIndex));
         resultList.addToRear(vertices[startIndex]);
         visited[startIndex] = true;
-
+        
         while (!traversalStack.isEmpty()) {
-            x = traversalStack.peek();
+            x = traversalStack.peek(); //guarda o item no topo da stack
             found = false;
-
-            // Encontre um vértice adjacente a x que não foi visitado e coloque-o na pilha
+            
             for (int i = 0; (i < numVertices) && !found; i++) {
-                if (adjMatrix[x.intValue()][i] && !visited[i]) {
+                double weight = getEdgeWeight(x, i);
+                if (weight > 0 && !visited[i]) {
                     traversalStack.push(new Integer(i));
                     resultList.addToRear(vertices[i]);
                     visited[i] = true;
                     found = true;
                 }
             }
-
+            
             if (!found && !traversalStack.isEmpty()) {
                 traversalStack.pop();
             }
-
         }
-
+        
         return resultList.iterator();
+        
     }
    
     
@@ -291,8 +322,7 @@ public class Network<T> implements NetworkADT<T> {
     
     @Override
     public double shortestPathWeight(T vertex1, T vertex2) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'shortestPathWeight'");
+        
     }
 
     private boolean indexIsValid(int index) {
@@ -301,9 +331,22 @@ public class Network<T> implements NetworkADT<T> {
 
 
     @Override
-    public Iterator iteratorShortestPath(T startVertex, T targetVertex) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public Iterator iteratorShortestPath(T startVertex, T targetVertex) {   
+        return iteratorShortestPath(getIndex(startVertex), getIndex(startVertex)); 
     }
+    
+    public Iterator iteratorShortestPath(int startIndex, int targetIndex) {
+        
+        double[] distances = new double[numVertices];
+        distances[startIndex] = 0;
+        
+        for (int i = 0; i < numVertices; i++) {
+            if (i != startIndex) {
+                distances[i] = -1;
+            }
+        }
+    }   
+    
 
     @Override
     public void addEdge(T vertex1, T vertex2, double weight) {
