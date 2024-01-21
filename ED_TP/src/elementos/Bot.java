@@ -4,10 +4,15 @@
  */
 package elementos;
 
+import interfacesADT.StackADT;
+import java.util.Iterator;
+
 /**
  *
  * @author David Santos
  */
 public class Bot {
+    protected Iterator<Localidade> itr;
+    protected StackADT<Localidade> stack;
     
 }
