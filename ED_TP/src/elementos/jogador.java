@@ -12,13 +12,13 @@ import interfacesADT.ListADT;
  *
  * @author David Santos
  */
-public class jogador {
+public class Jogador {
     
     private int id;
     private static int proximoID=0;
     private ListADT<Bot> bots;
 
-    public jogador(int quantidadeBots) {
+    public Jogador(int quantidadeBots) {
         this.id = ++proximoID;
         this.bots = new ArrayUnorderedList<>(quantidadeBots);
     }
