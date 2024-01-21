@@ -33,11 +33,14 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
         System.out.print("Introduza o numero de localizaçoes que deseja que o grafo tenha: ");
         numVertices = scan.nextInt();
 
+        Localidade[] tempLocalidade = new Localidade[numVertices];
+
         while (cont < numVertices) {
             System.out.print("Introduza o nome de uma localizaçao: ");
             name = scan.next();
-            Localidade localiade = new Localidade(name);
+            Localidade localidade = new Localidade(name);
             graph.addVertex(name);
+            tempLocalidade[cont] = localidade;
             cont++;
         }
 
@@ -61,13 +64,14 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
 
                     while (contador < numArestas) {
 
-                        double peso = 0;
-                        peso = 1 + (15 - 1) * random.nextDouble();
+                        double peso = 1 + (15 - 1) * random.nextDouble();
+                        int i = random.nextInt(numVertices);
+                        int j = random.nextInt(numVertices);
 
-                        int i = random.nextInt(numArestas - 1); //para linhas
-                        int j = random.nextInt(numArestas - 1); //para colunas
-
-                        graph.addEdge(i, j, peso);
+                        if (!graph.hasEdge(tempLocalidade[i], tempLocalidade[j])) {
+                            graph.addEdge(tempLocalidade[i], tempLocalidade[j], peso);
+                            contador++;
+                        }
 
                     }
                     break;
@@ -85,18 +89,21 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
 
                         switch (opcao) {
                             case 1:
-                                while (contador < numArestas) {
+                                //certificar se fica bem dentro do ciclo isConnected()
+                                do {
+                                    while (contador < numArestas) {
 
-                                    double peso = 0;
-                                    peso = 1 + (15 - 1) * random.nextDouble();
+                                        double peso = 1 + (15 - 1) * random.nextDouble();
+                                        int i = random.nextInt(numVertices);
+                                        int j = random.nextInt(numVertices);
 
-                                    int i = random.nextInt(numArestas - 1); //para linhas
-                                    int j = random.nextInt(numArestas - 1); //para colunas
+                                        if (!graph.hasEdge(tempLocalidade[i], tempLocalidade[j])) {
+                                            graph.addEdge(tempLocalidade[i], tempLocalidade[j], peso);
+                                            contador++;
+                                        }
 
-                                    graph.addEdge(i, j, peso);
-                                    graph.addEdge(j, i, peso);
-
-                                }
+                                    }
+                                }while(graph.isConnected());
                                 break;
                             case 2:
                                 while (contador < numArestas) {
@@ -110,8 +117,11 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
                                     int i = random.nextInt(numArestas - 1); //para linhas
                                     int j = random.nextInt(numArestas - 1); //para colunas
 
-                                    graph.addEdge(i, j, peso);
-                                    graph.addEdge(j, i, peso2);
+                                    if (!graph.hasEdge(tempLocalidade[i], tempLocalidade[j])) {
+                                        graph.addEdge(tempLocalidade[i], tempLocalidade[j], peso);
+                                        graph.addEdge(tempLocalidade[j], tempLocalidade[i], peso);
+                                        contador++;
+                                    }
 
                                 }
                                 break;
