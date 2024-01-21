@@ -46,8 +46,96 @@ public class PriorityQueue<T> extends
                     = (PriorityQueueNode<T>) super.removeMin();
             return temp.getElement();
         } catch (EmptyCollectionException ex) {
-            
+
         }
         return null; // exception??
+    }
+
+    public PriorityQueueNode<T> findNode(T targetElement) throws ElementNotFoundException, EmptyCollectionException {
+        if (targetElement == null) {
+            throw new ElementNotFoundException("elemento null");
+        }
+        if (isEmpty()) {
+            throw new EmptyCollectionException("Empty");
+        }
+        PriorityQueueNode<T> temp = null;
+        boolean found = false;
+
+        for (int ct = 0; ct < count && !found; ct++) {
+            if (targetElement.equals(tree[ct])) {
+                found = true;
+                temp = tree[ct];
+            }
+        }
+        if (!found) {
+            throw new ElementNotFoundException("binary tree");
+        }
+        return temp;
+    }
+
+    public void update(T targetElement, int priority) throws ElementNotFoundException, EmptyCollectionException {
+        
+         if (targetElement == null) {
+            throw new ElementNotFoundException("elemento null");
+        }
+        if (isEmpty()) {
+            throw new EmptyCollectionException("Empty");
+        }
+        int index=-1 ;
+        boolean found = false;
+
+        for (int ct = 0; ct < count && !found; ct++) {
+            if (targetElement.equals(tree[ct])) {
+                found = true;
+                tree[ct]=tree[count -1];
+                index = ct;
+            }
+        }
+        
+        heapifyRemove();
+        count--;
+        
+        addElement(targetElement, priority);
+        
+    }
+    
+    private void heapifyRemove() {
+        PriorityQueueNode<T> temp;
+        int node = 0;
+        int left = 1;
+        int right = 2;
+        int next;
+
+        if ((tree[left] == null) && (tree[right] == null)) {
+            next = count;
+        } else if (tree[left] == null) {
+            next = right;
+        } else if (tree[right] == null) {
+            next = left;
+        } else if (((Comparable) tree[left]).compareTo(tree[right]) < 0) {
+            next = left;
+        } else {
+            next = right;
+        }
+        temp = tree[node];
+
+        while ((next < count) && (((Comparable) tree[next]).compareTo(temp) < 0)) {
+            tree[node] = tree[next];
+            node = next;
+            left = 2 * node + 1;
+            right = 2 * (node + 1);
+            if ((tree[left] == null) && (tree[right] == null)) {
+                next = count;
+            } else if (tree[left] == null) {
+                next = right;
+            } else if (tree[right] == null) {
+                next = left;
+            } else if (((Comparable) tree[left]).compareTo(tree[right]) < 0) {
+                next = left;
+            } else {
+                next = right;
+            }
+        }
+        tree[node] = temp;
     }
 }
