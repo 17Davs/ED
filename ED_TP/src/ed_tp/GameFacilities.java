@@ -8,6 +8,7 @@ import elementos.Localidade;
 import java.util.Random;
 import java.util.Scanner;
 import estruturas.Network;
+import estruturas.NetworkADT;
 
 /**
  *
@@ -22,10 +23,16 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
     private int contador = 0;
     private int opcao = 0;
     private String name;
-    Network graph = new Network<>();
+    NetworkADT<Localidade> graph;
 
+    public GameFacilities() {
+        graph = new Network<>();
+    }
+
+    
+    
     @Override
-    public void criarMapa() {
+    public  void criarMapa() {
 
         int preenchimento = 0;
         int cont = 0;
@@ -39,7 +46,7 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
             System.out.print("Introduza o nome de uma localizaçao: ");
             name = scan.next();
             Localidade localidade = new Localidade(name);
-            graph.addVertex(name);
+            graph.addVertex(localidade);
             tempLocalidade[cont] = localidade;
             cont++;
         }
