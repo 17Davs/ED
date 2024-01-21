@@ -4,6 +4,7 @@
  */
 package estruturas;
 
+import interfacesADT.UnorderedListADT;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -139,135 +140,116 @@ public class Network<T> implements NetworkADT<T> {
         }
     }
 
-    /*
+    
     @Override
     public Iterator iteratorBFS(T startVertex) throws Exception {
-        Integer x;
-        LinkedQueue<Integer> traversalQueue = new LinkedQueue<Integer>();
+        
+        Integer x; //variavel que vai armazenar o indice atual durante a travessia
+        
+        LinkedQueue<Integer> travessalQueue = new LinkedQueue<Integer>();
         ArrayUnorderedList<T> resultList = new ArrayUnorderedList<T>();
+        
+        /*
+        Verifica se o index é valido se nao for entao retorna o iterador vazio
+        */
         int startIndex = getIndex(startVertex);
-        if (!indexIsValid(startIndex))
-            return resultList.iterator();
-        boolean[] visited = new boolean[numVertices];
-        for (int i = 0; i < numVertices; i++)
-            visited[i] = false;
-
-        traversalQueue.enqueue(new Integer(startIndex));
-        visited[startIndex] = true;
-
-        while (!traversalQueue.isEmpty()) {
-            x = traversalQueue.dequeue();
-            resultList.addToRear(vertices[x.intValue()]);
-            
-            for (int i = 0; i < numVertices; i++) {
-                if (adjMatrix[x.intValue()][i] && !visited[i]) {
-                    traversalQueue.enqueue(new Integer(i));
-                    visited[i] = true;
-                }
-            }
-        }
-        return resultList.iterator();
-    }*/
- /*
-    @Override
-    public Iterator iteratorDFS(T startVertex) throws Exception {
-        Integer x;
-        boolean found;
-        LinkedStack<Integer> traversalStack = new LinkedStack<Integer>();
-        ArrayUnorderedList<T> resultList = new ArrayUnorderedList<T>();
-        boolean[] visited = new boolean[numVertices];
-        int startIndex = getIndex(startVertex);
-
         if (!indexIsValid(startIndex)) {
             return resultList.iterator();
         }
-
+        
+        /*
+        Cria um array boolean  e coloca todos os vertices la como nao visitados
+        */
+        boolean[] visited = new boolean[numVertices];
         for (int i = 0; i < numVertices; i++) {
             visited[i] = false;
         }
-
+        
+        /*
+        Coloca a posicao do startVertex na queue e marca a posicao como visitado
+        */
+        travessalQueue.enqueue(new Integer(startIndex));
+        visited[startIndex] = true;
+        
+        /*
+        Faz o while ate esvaziar a queue
+        */
+        while (!travessalQueue.isEmpty()) {
+            
+            /*
+            Retira da queue e guarda na variavel x depois e guarda no ArrayUnorderedList
+            */
+            x = travessalQueue.dequeue();
+            resultList.addToRear(vertices[x.intValue()]);
+            
+            /*
+            adiciona os vertices adjacentes de x na queue e marca como visited
+            */
+            for (int i = 0; i < numVertices; i++) {
+                
+                double weight = getEdgeWeight(x, i);
+                if (weight > 0 && !visited[i]) {
+                    travessalQueue.enqueue(new Integer(i));
+                    visited[i] = true;
+                }
+                
+            }
+            
+        }
+        
+        return resultList.iterator();
+    }
+ 
+    @Override
+    public Iterator iteratorDFS(T startVertex) throws Exception {
+        
+        Integer x;
+        boolean found;
+        LinkedStack<Integer> traversalStack = new LinkedStack<Integer>();
+        ArrayUnorderedList<T> resultList = new ArrayUnorderedList<>();
+        
+        int startIndex = getIndex(startVertex);
+        if (!indexIsValid(startIndex)) {
+            return resultList.iterator();
+        }
+        
+        boolean visited[] = new boolean[numVertices];
+        for (int i = 0; i < numVertices; i++){
+            visited[i] = false;
+        }
         traversalStack.push(new Integer(startIndex));
         resultList.addToRear(vertices[startIndex]);
         visited[startIndex] = true;
-
+        
         while (!traversalStack.isEmpty()) {
-            x = traversalStack.peek();
+            x = traversalStack.peek(); //guarda o item no topo da stack
             found = false;
-
-            // Encontre um vértice adjacente a x que não foi visitado e coloque-o na pilha
+            
             for (int i = 0; (i < numVertices) && !found; i++) {
-                if (adjMatrix[x.intValue()][i] && !visited[i]) {
+                double weight = getEdgeWeight(x, i);
+                if (weight > 0 && !visited[i]) {
                     traversalStack.push(new Integer(i));
                     resultList.addToRear(vertices[i]);
                     visited[i] = true;
                     found = true;
                 }
             }
-
+            
             if (!found && !traversalStack.isEmpty()) {
                 traversalStack.pop();
             }
-
         }
-
+        
         return resultList.iterator();
+        
     }
-
-    @Override
-    public Iterator iteratorShortestPath(T startVertex, T targetVertex) {
-        int startIndex = getIndex(startVertex);
-        int targetIndex = getIndex(targetVertex);
-
-        if (!indexIsValid(startIndex) || !indexIsValid(targetIndex)) {
-            throw new IllegalArgumentException("Invalid start or target vertex");
-        }
-
-        // Dijkstra's Algorithm
-        Map<Integer, Double> distances = new HashMap<>();
-        Map<Integer, Integer> previousVertices = new HashMap<>();
-        PriorityQueue<VertexDistancePair> priorityQueue = new PriorityQueue<>(Comparator.comparingDouble(pair -> pair.distance));
-
-        for (int i = 0; i < numVertices; i++) {
-            distances.put(i, Double.POSITIVE_INFINITY);
-            previousVertices.put(i, null);
-        }
-
-        distances.put(startIndex, 0.0);
-        priorityQueue.offer(new VertexDistancePair(startIndex, 0.0));
-
-        while (!priorityQueue.isEmpty()) {
-            VertexDistancePair currentPair = priorityQueue.poll();
-            int currentVertex = currentPair.vertex;
-            double currentDistance = currentPair.distance;
-
-            if (currentVertex == targetIndex) {
-                // Construir o caminho mais curto
-                List<T> shortestPath = buildShortestPath(previousVertices, startIndex, targetIndex);
-                return shortestPath.iterator();
-            }
-
-            for (int neighbor = 0; neighbor < numVertices; neighbor++) {
-                if (adjMatrix[currentVertex][neighbor]) {
-                    double weight = getEdgeWeight(currentVertex, neighbor);
-                    double newDistance = currentDistance + weight;
-
-                    if (newDistance < distances.get(neighbor)) {
-                        distances.put(neighbor, newDistance);
-                        previousVertices.put(neighbor, currentVertex);
-                        priorityQueue.offer(new VertexDistancePair(neighbor, newDistance));
-                    }
-                }
-            }
-        }
-
-        // Sem caminho encontrado
-        return Collections.emptyIterator();
-    }*/
+   
+    
     private double getEdgeWeight(int currentVertex, int neighbor) {
         if (indexIsValid(currentVertex) && indexIsValid(neighbor)) {
             return matrizPeso[currentVertex][neighbor];
         } else {
-            return Double.POSITIVE_INFINITY;
+            return 0;
         }
     }
 
@@ -300,7 +282,7 @@ public class Network<T> implements NetworkADT<T> {
         boolean[] visited = new boolean[numVertices];
         int start = findFirstNonNullVertex();
 
-        //buscaProfundidade(start, visited);
+        buscaProfundidade(start, visited);
         for (int i = 0; i < numVertices; i++) {
             if (!visited[i] && vertices[i] != null) {
                 return false;
@@ -317,61 +299,54 @@ public class Network<T> implements NetworkADT<T> {
                 return i;
             }
         }
-        return -1; // Nenhum vértice não nulo encontrado (o grafo está vazio)
+        return -1;
     }
 
-    /*
+    
     private void buscaProfundidade(int start, boolean[] visited) {
         visited[start] = true;
 
         for (int i = 0; i < numVertices; i++) {
-            if (adjMatrix[start][i] && !visited[i]) {
+            double weight = getEdgeWeight(start, i);
+            if (weight > 0 && !visited[i]) {
                 buscaProfundidade(i, visited);
             }
         }
-    }*/
+    }
+    
     @Override
     public int size() {
         return numVertices;
     }
 
-    /*
-    @Override
-    public void addEdge(T vertex1, T vertex2, double weight) {
-        int index1 = findIndex(vertex1);
-        int index2 = findIndex(vertex2);
-
-        if (indexIsValid(index1) && indexIsValid(index2)) {
-            adjMatrix[index1][index2] = weight;
-            adjMatrix[index2][index1] = weight;
-        } else {
-            throw new IllegalArgumentException("Vertices inválidos: " + vertex1 + ", " + vertex2);
-        }
-    }*/
+    
     @Override
     public double shortestPathWeight(T vertex1, T vertex2) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'shortestPathWeight'");
+        
     }
 
     private boolean indexIsValid(int index) {
         return index >= 0 && index < numVertices;
     }
 
-    @Override
-    public Iterator iteratorBFS(T startVertex) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
 
     @Override
-    public Iterator iteratorDFS(T startVertex) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public Iterator iteratorShortestPath(T startVertex, T targetVertex) {   
+        return iteratorShortestPath(getIndex(startVertex), getIndex(startVertex)); 
     }
-
-    @Override
-    public Iterator iteratorShortestPath(T startVertex, T targetVertex) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
+    
+    public Iterator iteratorShortestPath(int startIndex, int targetIndex) {
+        
+        double[] distances = new double[numVertices];
+        distances[startIndex] = 0;
+        
+        for (int i = 0; i < numVertices; i++) {
+            if (i != startIndex) {
+                distances[i] = -1;
+            }
+        }
+    }   
+    
 
     @Override
     public void addEdge(T vertex1, T vertex2, double weight) {
@@ -385,5 +360,17 @@ public class Network<T> implements NetworkADT<T> {
             throw new IllegalArgumentException("Vértices inválidos: " + vertex1 + ", " + vertex2);
         }
     }
+    
+    public boolean hasEdge(T vertex1, T vertex2) {
+        int index1 = findIndex(vertex1);
+        int index2 = findIndex(vertex2);
+
+        if (indexIsValid(index1) && indexIsValid(index2)) {
+            return matrizPeso[index1][index2] != 0;
+        } else {
+            throw new IllegalArgumentException("Vértices inválidos: " + vertex1 + ", " + vertex2);
+        }
+    }
+
 
 }
