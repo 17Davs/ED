@@ -37,13 +37,11 @@ public class ED_TP {
                 case 1:
                     System.out.println("Criação de um mapa novo!");
                     game.criarMapa();
-                    
+                    game.iniciarJogo();
                     break;
                 case 2:
                     System.out.println("Importação de um mapa!");
-                    //defaults maps
-                    //ou
-                    //pedir localizaçao do mapa a importar
+                    game.importMapa();
                     break;
                 case 0:
                     System.out.println("Fechando o jogo!");

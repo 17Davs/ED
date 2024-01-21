@@ -4,6 +4,8 @@
  */
 package estruturas;
 
+import elementos.Localidade;
+
 /**
  *
  * @author Utilizador

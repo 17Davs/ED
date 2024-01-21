@@ -13,8 +13,10 @@ public class Localidade {
     private static int proximoID=0;
     private String nome;
     private boolean ocupada;
+    private int flag;
 
     public Localidade(String nome) {
+        this.flag=0;
         this.id = ++proximoID;
         this.nome = nome;
         this.ocupada = false;
@@ -24,6 +26,11 @@ public class Localidade {
         return id;
     }
 
+    public void setFlag(int flag) {
+        this.flag = flag;
+    }
+
+    
     public String getNome() {
         return nome;
     }
