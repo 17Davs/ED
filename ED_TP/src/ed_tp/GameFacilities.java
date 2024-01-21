@@ -64,7 +64,7 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
 
                     while (contador < numArestas) {
 
-                        double peso = 1 + (15 - 1) * random.nextDouble();
+                        int peso = 1 + (15 - 1) * random.nextInt();
                         int i = random.nextInt(numVertices);
                         int j = random.nextInt(numVertices);
 
@@ -93,7 +93,7 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
                                 do {
                                     while (contador < numArestas) {
 
-                                        double peso = 1 + (15 - 1) * random.nextDouble();
+                                        int peso = 1 + (15 - 1) * random.nextInt();
                                         int i = random.nextInt(numVertices);
                                         int j = random.nextInt(numVertices);
 
@@ -108,11 +108,11 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
                             case 2:
                                 while (contador < numArestas) {
 
-                                    double peso = 0;
-                                    peso = 1 + (15 - 1) * random.nextDouble();
+                                    int peso = 0;
+                                    peso = 1 + (15 - 1) * random.nextInt();
 
-                                    double peso2 = 0;
-                                    peso2 = 1 + (15 - 1) * random.nextDouble();
+                                    int peso2 = 0;
+                                    peso2 = 1 + (15 - 1) * random.nextInt();
 
                                     int i = random.nextInt(numArestas - 1); //para linhas
                                     int j = random.nextInt(numArestas - 1); //para colunas

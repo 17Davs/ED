@@ -5,14 +5,9 @@
 package estruturas;
 
 import interfacesADT.UnorderedListADT;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.PriorityQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -253,20 +248,6 @@ public class Network<T> implements NetworkADT<T> {
         }
     }
 
-    private List<T> buildShortestPath(Map<Integer, Integer> previousVertices, int start, int target) {
-        List<T> path = new ArrayList<>();
-        int current = target;
-
-        while (current != start) {
-            path.add(vertices[current]);
-            current = previousVertices.get(current);
-        }
-
-        path.add(vertices[start]);
-        Collections.reverse(path);
-
-        return path;
-    }
 
     @Override
     public boolean isEmpty() {
@@ -323,6 +304,16 @@ public class Network<T> implements NetworkADT<T> {
     @Override
     public double shortestPathWeight(T vertex1, T vertex2) {
         
+        int somatorio = 0;
+        Iterator iterator = iteratorShortestPath(vertex1, vertex2);
+        
+        while (iterator.hasNext()) {
+            PriorityQueueNode<T> node = (PriorityQueueNode<T>) iterator.next();
+            somatorio += node.getPriority();
+        }
+        
+        return somatorio;
+        
     }
 
     private boolean indexIsValid(int index) {
@@ -337,14 +328,53 @@ public class Network<T> implements NetworkADT<T> {
     
     public Iterator iteratorShortestPath(int startIndex, int targetIndex) {
         
-        double[] distances = new double[numVertices];
-        distances[startIndex] = 0;
-        
+        int[] distances = new int[numVertices];
+        int[] predecessors = new int[numVertices];
+
+        // Initialize distances and predecessors
         for (int i = 0; i < numVertices; i++) {
-            if (i != startIndex) {
-                distances[i] = -1;
+            if (i == startIndex) {
+                distances[i] = 0;
+            } else {
+                distances[i] = Integer.MAX_VALUE;
+            }
+            predecessors[i] = -1;
+        }
+
+        PriorityQueue<T> priorityQueue = new PriorityQueue<>();
+        for (int i = 0; i < numVertices; i++){
+            priorityQueue.addElement(vertices[i], (int) distances[i]);
+        }
+
+        // Process vertices using Dijkstra's algorithm
+        while (!priorityQueue.isEmpty()) {
+            PriorityQueueNode<T> minNode = null;
+            try {
+                minNode = priorityQueue.removeMin();
+            } catch (EmptyCollectionException ex) {
+                Logger.getLogger(Network.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            int u = getIndex(minNode.getElement());
+
+            // Update distances and predecessors
+            for (int v = 0; v < numVertices; v++) {
+                if (isAdjacent(u, v) && distances[u] + getEdgeWeight(u, v) < distances[v]) {
+                    distances[v] = (int) (distances[u] + getEdgeWeight(u, v));
+                    predecessors[v] = u;
+
+                    try {
+                        // Update priority in the priority queue
+                        ((PriorityQueue)priorityQueue).update(vertices[v], (int) distances[v]);
+                    } catch (ElementNotFoundException ex) {
+                        Logger.getLogger(Network.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (EmptyCollectionException ex) {
+                        Logger.getLogger(Network.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
             }
         }
+        return priorityQueue.iteratorInOrder();
+        
     }   
     
 
@@ -370,6 +400,13 @@ public class Network<T> implements NetworkADT<T> {
         } else {
             throw new IllegalArgumentException("Vértices inválidos: " + vertex1 + ", " + vertex2);
         }
+    }
+    
+    public boolean isAdjacent(int vertex1, int vertex2) {
+        if (getEdgeWeight(vertex1, vertex2) > 0) {
+            return true;
+        }
+        return false;
     }
 
 
