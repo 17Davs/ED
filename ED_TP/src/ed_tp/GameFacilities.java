@@ -7,16 +7,14 @@ package ed_tp;
 import elementos.Flag;
 import elementos.Jogador;
 import elementos.Localidade;
-import estruturas.ArrayUnorderedList;
+import estruturas.EmptyCollectionException;
+
 import estruturas.Mapa;
+import interfacesADT.QueueADT;
 import java.util.Random;
 import java.util.Scanner;
-import estruturas.Network;
-import estruturas.NetworkADT;
-import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import jdk.nashorn.api.tree.NewTree;
 
 /**
  *
@@ -29,6 +27,7 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
     private int numVertices;
     private int numArestas = 0;
     private Jogador jogadorAtual;
+    private QueueADT<Jogador> jogadores;
 
     private static final String currentWorkingDir = System.getProperty("user.dir");
 
@@ -44,24 +43,53 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
         int i = 0;
 
         System.out.println("========   Criação das Flags   ========");
-        System.out.println("              Jogador 1                ");
-        for (i = 0; i < localidades.length; i++) {
-            System.out.println((i + 1) + ". " + localidades[i].getNome());
-        }
-        System.out.print("Escolha onde deseja colocar sua Flag: ");
-        int opcao = scan.nextInt();
+        boolean exit = false;
+        while (!exit) {
+            System.out.println("              Jogador 1                ");
 
-        if (opcao >= 1 && opcao <= localidades.length) {
-            Flag flag = new Flag(jogadorAtual);
-            localidades[opcao - 1].setFlag(flag);
+            for (i = 0; i < localidades.length; i++) {
+                System.out.println((i + 1) + ". " + localidades[i].getNome());
+            }
+            System.out.print("Escolha onde deseja colocar sua Flag: ");
+            int opcao = scan.nextInt();
+            
+            if (opcao >= 1 && opcao <= localidades.length) {
+                try {
+                    jogadorAtual = jogadores.dequeue();
+                } catch (EmptyCollectionException ex) {
+                }
+                Flag flag = new Flag(jogadorAtual);
+                localidades[opcao - 1].setFlag(flag);
+                jogadorAtual.setBase(localidades[opcao - 1]);
+                System.out.println("A base do jogador "+ jogadorAtual.getId() + "foi defenida para "+ localidades[opcao - 1].getNome());              
+                jogadores.enqueue(jogadorAtual);
+                exit = true;
+            } else {
+                System.out.println("Opção Inválida");
+            }
         }
-        System.out.println("           2. Bidirecional             ");
+        while (!exit) {
+            System.out.println("              Jogador 2                ");
+
+            for (i = 0; i < localidades.length; i++) {
+                System.out.println((i + 1) + ". " + localidades[i].getNome());
+            }
+            System.out.print("Escolha onde deseja colocar sua Flag: ");
+            int opcao = scan.nextInt();
+
+            if (opcao >= 1 && opcao <= localidades.length) {
+                 try {
+                    jogadorAtual = jogadores.dequeue();
+                } catch (EmptyCollectionException ex) {
+                }
+                Flag flag = new Flag(jogadorAtual);
+                localidades[opcao - 1].setFlag(flag);
+                jogadores.enqueue(jogadorAtual);
+                exit = true;
+            }
+        }
+
         System.out.println("==================================");
-
-        //listar as lovalidades 
-        System.out.print("Introduza sua opcao por favor:");
-        opcao = scan.nextInt();
-
     }
 
     @Override
