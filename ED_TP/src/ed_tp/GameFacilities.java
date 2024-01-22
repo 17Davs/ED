@@ -4,6 +4,7 @@
  */
 package ed_tp;
 
+import elementos.Flag;
 import elementos.Jogador;
 import elementos.Localidade;
 import estruturas.ArrayUnorderedList;
@@ -27,7 +28,8 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
     Random random = new Random();
     private int numVertices;
     private int numArestas = 0;
-    private int contador = 0;
+    private Jogador jogadorAtual;
+    
     private static final String currentWorkingDir = System.getProperty("user.dir");
 
     private String name;
@@ -39,22 +41,26 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
 
     public void criarFlags() {
         Localidade[] localidades = graph.getVertexes();
-
+        int i = 0;
+        
         System.out.println("========   Criação das Flags   ========");
         System.out.println("              Jogador 1                ");
-        int contador = 0;
-        for (Localidade l : localidades) {
-            System.out.println(++contador);
+        for (i=0;i<localidades.length;i++) {
+            System.out.println((i+1) + ". " + localidades[i].getNome());
         }
-
-        System.out.print("Introduza sua opcao por favor:");
-        int op = scan.nextInt();
+        System.out.print("Escolha onde deseja colocar sua Flag: ");
+        int opcao = scan.nextInt();
+        
+        if (opcao >= 1 && opcao <= localidades.length) {
+            Flag flag = new Flag(jogadorAtual);
+                        localidades[opcao-1].setFlag(flag);
+        }
         System.out.println("           2. Bidirecional             ");
         System.out.println("==================================");
 
         //listar as lovalidades 
         System.out.print("Introduza sua opcao por favor:");
-        op = scan.nextInt();
+        opcao = scan.nextInt();
 
     }
 
@@ -86,6 +92,11 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
         preenchimento = scan.nextInt();
 
         numArestas = (int) ((numVertices * (numVertices - 1)) * ((double) preenchimento / 100));
+<<<<<<< HEAD
+=======
+
+        System.out.println("numVertices:" + numVertices + "  preenchimento: " + preenchimento);
+>>>>>>> 7fc23775d0dc73a90e5da32d035c544d74286fc4
         System.out.println("Calculo de arestas ficou igual a :" + numArestas);
 
         do {
@@ -125,6 +136,7 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
 
                         switch (opcao) {
                             case 1:
+                                int contador=0;
                                 //certificar se fica bem dentro do ciclo isConnected()
                                 do {
                                     while (contador < numArestas) {

@@ -48,7 +48,7 @@ public class Mapa<T> extends Network<T>{
         JSONArray localidadesJSON = new JSONArray();
         for (int i = 0; i < numVertices; i++) {
             JSONObject localizacaoJSON = new JSONObject();
-            localizacaoJSON.put("Nome", vertices[i].toString()); 
+            localizacaoJSON.put("Nome", ((Localidade)vertices[i]).getNome()); 
             localidadesJSON.add(localizacaoJSON);
         }
         mapaJSON.put("Localidades", localidadesJSON);
@@ -69,6 +69,7 @@ public class Mapa<T> extends Network<T>{
 
         try (FileWriter file = new FileWriter(filePath)) {
             file.write(mapaJSON.toJSONString());
+            file.close();
             System.out.println("Mapa exportado com sucesso para: " + filePath);
         } catch (IOException e) {
             e.printStackTrace();
