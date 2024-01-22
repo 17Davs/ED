@@ -8,16 +8,15 @@ import elementos.Bot;
 import elementos.Flag;
 import elementos.Jogador;
 import elementos.Localidade;
-import estruturas.ArrayUnorderedList;
+import estruturas.EmptyCollectionException;
+
 import estruturas.Mapa;
+import interfacesADT.QueueADT;
+import java.util.Iterator;
 import java.util.Random;
 import java.util.Scanner;
-import estruturas.Network;
-import estruturas.NetworkADT;
-import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import jdk.nashorn.api.tree.NewTree;
 
 /**
  *
@@ -30,6 +29,7 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
     private int numVertices;
     private int numArestas = 0;
     private Jogador jogadorAtual;
+    private QueueADT<Jogador> jogadores;
 
     private static final String currentWorkingDir = System.getProperty("user.dir");
 
