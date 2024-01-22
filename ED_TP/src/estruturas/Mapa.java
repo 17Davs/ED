@@ -100,12 +100,12 @@ public class Mapa<T> extends Network<T>{
             JSONArray arestasArray = (JSONArray) jsonObject.get("Arestas");
              for (int i = 0; i < arestasArray.size(); i++) {
                 JSONObject aresta = (JSONObject) arestasArray.get(i);
-                int origem = (int) aresta.get("Origem");
-                int destino = (int) aresta.get("Destino");
+                long origem = (long) aresta.get("Origem");
+                long destino = (long) aresta.get("Destino");
                 double peso = (double) aresta.get("Peso");
 
                 
-                mapa.addEdge(origem, destino, peso);
+                mapa.addEdge((int)origem, (int)destino, peso);
             }
             
             return mapa;
