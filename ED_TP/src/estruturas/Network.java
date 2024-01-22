@@ -142,21 +142,22 @@ public class Network<T> implements NetworkADT<T> {
     @Override
     public Iterator iteratorBFS(T startVertex) {
 
-        Integer x = null; //variavel que vai armazenar o indice atual durante a travessia
+        Integer x = null; // variavel que vai armazenar o indice atual durante a travessia
 
-        LinkedQueue<Integer> travessalQueue = new LinkedQueue<Integer>();
+        LinkedQueue<Integer> traversalQueue = new LinkedQueue<Integer>();
         ArrayUnorderedList<T> resultList = new ArrayUnorderedList<T>();
 
         /*
-        Verifica se o index é valido se nao for entao retorna o iterador vazio
+     * Verifica se o index é valido se nao for entao retorna o iterador vazio
          */
         int startIndex = getIndex(startVertex);
         if (!indexIsValid(startIndex)) {
+            System.out.println("Invalid start index: " + startIndex);
             return resultList.iterator();
         }
 
         /*
-        Cria um array boolean  e coloca todos os vertices la como nao visitados
+     * Cria um array boolean e coloca todos os vertices la como nao visitados
          */
         boolean[] visited = new boolean[numVertices];
         for (int i = 0; i < numVertices; i++) {
@@ -164,39 +165,36 @@ public class Network<T> implements NetworkADT<T> {
         }
 
         /*
-        Coloca a posicao do startVertex na queue e marca a posicao como visitado
+     * Coloca a posicao do startVertex na queue e marca a posicao como visitado
          */
-        travessalQueue.enqueue(new Integer(startIndex));
+        traversalQueue.enqueue(new Integer(startIndex));
         visited[startIndex] = true;
 
         /*
-        Faz o while ate esvaziar a queue
+     * Faz o while ate esvaziar a queue
          */
-        while (!travessalQueue.isEmpty()) {
-
+        while (!traversalQueue.isEmpty()) {
             try {
                 /*
-                Retira da queue e guarda na variavel x depois e guarda no ArrayUnorderedList
+             * Retira da queue e guarda na variavel x depois e guarda no ArrayUnorderedList
                  */
-                x = travessalQueue.dequeue();
-            } catch (EmptyCollectionException ex) {
+                x = traversalQueue.dequeue();
+                resultList.addToRear(vertices[x.intValue()]);
 
-            }
-            resultList.addToRear(vertices[x.intValue()]);
-
-            /*
-            adiciona os vertices adjacentes de x na queue e marca como visited
-             */
-            for (int i = 0; i < numVertices; i++) {
-
-                double weight = getEdgeWeight(x, i);
-                if (weight > 0 && !visited[i]) {
-                    travessalQueue.enqueue(new Integer(i));
-                    visited[i] = true;
+                /*
+             * adiciona os vertices adjacentes de x na queue e marca como visited
+                 */
+                for (int i = 0; i < numVertices; i++) {
+                    double weight = getEdgeWeight(x, i);
+                    if (weight > 0 && !visited[i]) {
+                        traversalQueue.enqueue(new Integer(i));
+                        visited[i] = true;
+                    }
                 }
-
+            } catch (EmptyCollectionException ex) {
+                System.out.println("Queue is unexpectedly empty.");
+                ex.printStackTrace();
             }
-
         }
 
         return resultList.iterator();
@@ -338,6 +336,10 @@ public class Network<T> implements NetworkADT<T> {
 
     public Iterator iteratorShortestPath(int startIndex, int targetIndex) {
 
+        if (startIndex < 0 || startIndex >= numVertices || targetIndex < 0 || targetIndex >= numVertices) {
+            throw new IllegalArgumentException("Invalid indices");
+        }
+
         int[] distances = new int[numVertices];
         int[] predecessors = new int[numVertices];
 
@@ -407,7 +409,7 @@ public class Network<T> implements NetworkADT<T> {
 
     @Override
     public void addEdge(T vertex1, T vertex2, double weight) {
-       addEdge(findIndex(vertex1),findIndex(vertex2), weight);
+        addEdge(findIndex(vertex1), findIndex(vertex2), weight);
     }
 
     protected void addEdge(int index1, int index2, double weight) {

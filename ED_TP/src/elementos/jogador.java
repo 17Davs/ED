@@ -8,6 +8,8 @@ import estruturas.ArrayUnorderedList;
 import estruturas.EmptyCollectionException;
 import interfacesADT.ListADT;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -21,11 +23,12 @@ public class Jogador {
     private static int proximoID = 0;
     private ArrayUnorderedList<Bot> bots;
     private Localidade base;
-    
+    Scanner scan = new Scanner(System.in);
+
     public Jogador(int quantidadeBots) {
         this.id = ++proximoID;
         this.bots = new ArrayUnorderedList<>(quantidadeBots);
-        this.base=null;
+        this.base = null;
     }
 
     public int getId() {
@@ -40,43 +43,41 @@ public class Jogador {
     public void setBase(Localidade base) {
         this.base = base;
     }
-    
 
     public ListADT<Bot> getBots() {
         return bots;
     }
 
-    public void iteratorToBot(int indiceBot, Iterator<Localidade> iterator) throws EmptyCollectionException {
-        if (indiceBot >= 0 && indiceBot < bots.size()) {
-            Bot bot = bots.removeFirst(); // Remove o bot do início da lista
-            bot.setIterator(iterator); // Configura o iterador
-            bots.addToRear(bot);
+    public void iteratorToBot(int indiceBot, int numBots, Iterator<Localidade> iterator) throws EmptyCollectionException {
+
+        if (!bots.isEmpty() && indiceBot >= 0 && indiceBot < numBots) {
+            ArrayUnorderedList<Bot> tempBots = new ArrayUnorderedList<>();
+
+            // Update iterator for the desired bot
+            for (int i = 0; i < indiceBot; i++) {
+                tempBots.addToRear(bots.removeFirst());
+            }
+
+            Bot botToUpdate = bots.removeFirst();
+            botToUpdate.setIterator(iterator);
+            tempBots.addToRear(botToUpdate);
+
+            while (!bots.isEmpty()) {
+                tempBots.addToRear(bots.removeFirst());
+            }
+
+            bots = tempBots;
+
+            System.out.println("Iterador configurado para o Bot " + (indiceBot + 1));
         } else {
-            System.out.println("Indice do bot invalido");
+            System.out.println("Lista de bots vazia ou índice do bot inválido. Tente novamente.");
         }
     }
 
-    public void setIteradorBFSParaBot(int b, Iterator iteratorBFS) {
+    public void setIteradorBFSParaBot(int b, int numBots, Iterator iteratorBFS) {
         try {
-            iteratorToBot(b, iteratorBFS);
-            System.out.println("Iterador BFS configurado para o Bot " + b);
-        } catch (EmptyCollectionException e) {
-            System.out.println("Erro ao configurar o iterador para o Bot " + b);
-            e.printStackTrace();
-        }
-    }
-    public void setIteradorDFSParaBot(int b, Iterator iteratorDFS) {
-        try {
-            iteratorToBot(b, iteratorDFS);
-            System.out.println("Iterador BFS configurado para o Bot " + b);
-        } catch (EmptyCollectionException e) {
-            System.out.println("Erro ao configurar o iterador para o Bot " + b);
-            e.printStackTrace();
-        }
-    }
-    public void setIteradorShortestPathParaBot(int b, Iterator iteratorShortestPath) {
-        try {
-            iteratorToBot(b, iteratorShortestPath);
+            System.out.println("Setting BFS iterator for Bot " + b);
+            iteratorToBot(b - 1, numBots, iteratorBFS);
             System.out.println("Iterador BFS configurado para o Bot " + b);
         } catch (EmptyCollectionException e) {
             System.out.println("Erro ao configurar o iterador para o Bot " + b);
@@ -85,4 +86,30 @@ public class Jogador {
     }
 
 
+    public void setIteradorDFSParaBot(int b, int numBots, Iterator iteratorDFS) {
+        try {
+            System.out.println("Setting DFS iterator for Bot " + b);
+            iteratorToBot(b - 1, numBots, iteratorDFS);
+            System.out.println("Iterador DFS configurado para o Bot " + b);
+        } catch (EmptyCollectionException e) {
+            System.out.println("Erro ao configurar o iterador para o Bot " + b);
+            e.printStackTrace();
+        }
+    }
+
+    public void setIteradorShortestPathParaBot(int b, int numBots, Iterator iteratorShortestPath) {
+        try {
+            System.out.println("Setting Shortest Path iterator for Bot " + b);
+            iteratorToBot(b - 1, numBots, iteratorShortestPath);
+            System.out.println("Iterador ShortestPath configurado para o Bot " + b);
+        } catch (EmptyCollectionException e) {
+            System.out.println("Erro ao configurar o iterador para o Bot " + b);
+            e.printStackTrace();
+        }
+    }
+
+    public void adicionarBot(Bot bot) {
+        bots.addToRear(bot);
+    }
+    
 }

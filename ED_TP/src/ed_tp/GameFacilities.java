@@ -4,6 +4,7 @@
  */
 package ed_tp;
 
+import elementos.Bot;
 import elementos.Flag;
 import elementos.Jogador;
 import elementos.Localidade;
@@ -39,28 +40,51 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
         graph = new Mapa<>();
     }
 
-    public void criarFlags() {
-        Localidade[] localidades = graph.getVertexes();
-        int i = 0;
+    public void criarFlags(Jogador jogador) {
+        Object[] vertices = graph.getVertexes();
 
-        System.out.println("========   Criação das Flags   ========");
-        System.out.println("              Jogador 1                ");
-        for (i = 0; i < localidades.length; i++) {
+        // Converte o array de objetos para um array de Localidade manualmente
+        Localidade[] localidades = new Localidade[vertices.length];
+        for (int i = 0; i < vertices.length; i++) {
+            localidades[i] = (Localidade) vertices[i];
+        }
+
+        System.out.println("======== Definir Base ========");
+        System.out.println("Escolha uma base entre as seguintes localidades:");
+
+        for (int i = 0; i < localidades.length; i++) {
             System.out.println((i + 1) + ". " + localidades[i].getNome());
         }
-        System.out.print("Escolha onde deseja colocar sua Flag: ");
-        int opcao = scan.nextInt();
 
-        if (opcao >= 1 && opcao <= localidades.length) {
-            Flag flag = new Flag(jogadorAtual);
-            localidades[opcao - 1].setFlag(flag);
-        }
-        System.out.println("           2. Bidirecional             ");
+        int opcaoBase = 0;
+        Localidade base = null;
+
+        do {
+            System.out.print("Introduza o número da localidade para a base: ");
+            int opcao = scan.nextInt();
+
+            if (opcao >= 1 && opcao <= localidades.length) {
+                base = localidades[opcao - 1];
+
+                // Check if the selected base already has a flag
+                if (base.getFlag() == null) {
+                    System.out.println("Base selecionada: " + base.getNome());
+                } else {
+                    System.out.println("Erro: A base já possui uma flag. Escolha outra base.");
+                    base = null; // Reset base to null to continue the loop
+                }
+            } else {
+                System.out.println("Opção inválida. Tente novamente.");
+            }
+
+        } while (base == null);
+
+        jogador.setBase(base);
+
+        Flag flag = new Flag(jogador);
+        base.setFlag(flag);
+        System.out.println("Flag do jogador " + jogador.getId() + " colocada na base " + base.getNome());
         System.out.println("==================================");
-
-        //listar as lovalidades 
-        System.out.print("Introduza sua opcao por favor:");
-        opcao = scan.nextInt();
 
     }
 
@@ -92,11 +116,8 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
         preenchimento = scan.nextInt();
 
         numArestas = (int) ((numVertices * (numVertices - 1)) * ((double) preenchimento / 100));
-<<<<<<< HEAD
-=======
 
         System.out.println("numVertices:" + numVertices + "  preenchimento: " + preenchimento);
->>>>>>> 7fc23775d0dc73a90e5da32d035c544d74286fc4
         System.out.println("Calculo de arestas ficou igual a :" + numArestas);
 
         do {
@@ -218,16 +239,34 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
         Jogador jogador1 = new Jogador(numBots);
         Jogador jogador2 = new Jogador(numBots);
 
+        for (int i = 1; i <= numBots; i++) {
+            Bot bot = new Bot(); // Substitua "Bot" pelo tipo correto da sua classe Bot
+            jogador1.adicionarBot(bot);
+        }
+
+// Adicionar bots ao jogador2
+        for (int i = 1; i <= numBots; i++) {
+            Bot bot = new Bot(); // Substitua "Bot" pelo tipo correto da sua classe Bot
+            jogador2.adicionarBot(bot);
+        }
+
+        System.out.println("\n\n");
+        System.out.println("Flag jogador 1");
+        criarFlags(jogador1);
+        System.out.println("\n\n");
+        System.out.println("Flag jogador 2");
+        criarFlags(jogador2);
+
         if (numBots < numIterators) {
             //random
         } else {
             System.out.println("Padronização de bots para o jogador 1");
-            for (int b = 1; b <= numBots; b++) {
+            for (int b = 1; b <= numBots;) {
                 System.out.println("Bot numero " + b + " para o jogador 1");
-                do {
+                
                     System.out.println();
                     System.out.println("======== Iterador para o bot " + b + " ========");
-                    System.out.println("      1. Travessia por largura (BFS)       ");//por retirar
+                    System.out.println("      1. Travessia por largura (BFS)       ");
                     System.out.println("    2. Travessia por profundidade (DFS)    ");
                     System.out.println("            3. Shortest Path               ");
                     System.out.println("===========================================");
@@ -237,123 +276,68 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
 
                     switch (opcao) {
                         case 1:
-                            System.out.println("Foi escolhido a travessia BFS para o bot" + b);
+                            System.out.println("Foi escolhido a travessia BFS para o bot " + b);
 
-                            System.out.println("Lista de Localidades");
-                            Object[] vertexArray = graph.getVertexes();
-                            for (Object obj : vertexArray) {
-                                try {
-                                    Localidade localidade = (Localidade) obj;
-                                    System.out.println(localidade);
-                                } catch (ClassCastException e) {
-                                    System.out.println("Erro: O objeto não é do tipo Localidade");
-                                    e.printStackTrace(); // print the stack trace for debugging
-                                }
-                            }
+                            Localidade startVertex = jogador1.getBase();
 
-                            Localidade startVertex = null;
-                            do {
-                                System.out.println("Introduza o nome da sua localizacao inicial: ");
-                                String localidadeInicial = scan.next();
-                                for (Object obj : vertexArray) {
-                                    try {
-                                        Localidade localidade = (Localidade) obj;
-                                        if (localidade.getNome().equalsIgnoreCase(localidadeInicial)) {
-                                            startVertex = localidade;
-                                            break;
-                                        }
-                                    } catch (ClassCastException e) {
-                                        System.out.println("Erro: O objeto não é do tipo Localidade");
-                                        e.printStackTrace(); // print the stack trace for debugging
-                                    }
-                                }
-                                if (startVertex == null) {
-                                    System.out.println("Nome do vertice nao existe no grafo");
-                                }
-                            } while (startVertex == null);
+                            if (startVertex != null) {
 
-                             {
                                 Iterator<Localidade> bfsIterator = graph.iteratorBFS(startVertex);
-                                jogador1.setIteradorBFSParaBot(b, bfsIterator);
+
+                                jogador1.setIteradorBFSParaBot(b, numBots, bfsIterator);
+                            } else {
+                                System.out.println("Erro para colocar  bot na base onde esta a flag do jogador");
                             }
+                            b++;
                             break;
 
                         case 2:
                             System.out.println("Foi escolhido a travessia DFS para o bot" + b);
 
-                            System.out.println("Lista de Localidades");
-                            for (Localidade localidade : graph.getVertexes()) {
-                                System.out.println(localidade);
+                            Localidade startVertex2 = jogador1.getBase();
+
+                            if (startVertex2 != null) {
+
+                                Iterator<Localidade> dfsIterator = graph.iteratorDFS(startVertex2);
+
+                                jogador1.setIteradorDFSParaBot(b, numBots, dfsIterator);
+                            } else {
+                                System.out.println("Erro para colocar  bot na base onde esta a flag do jogador");
                             }
-
-                            Localidade startVertex2 = null;
-                            do {
-                                System.out.println("Introduza o nome da sua localizacao inicial: ");
-                                String localidadeInicial = scan.next();
-                                for (Localidade localidade : graph.getVertexes()) {
-                                    if (localidade.getNome().equalsIgnoreCase(localidadeInicial)) {
-                                        startVertex = localidade;
-                                        break;
-                                    } else {
-                                        System.out.println("Nome do vertice nao existe no grafo");
-                                    }
-                                }
-                            } while (startVertex2 != null);
-
-                            jogador1.setIteradorDFSParaBot(b, graph.iteratorDFS(startVertex2));
+                            b++;
                             break;
                         case 3:
                             System.out.println("Foi escolhido a travessia Shortest Path para o bot" + b);
 
-                            System.out.println("Foi escolhido a travessia DFS para o bot" + b);
+                            Localidade startVertex3 = jogador1.getBase();
+                            Localidade targetVertex = jogador1.getBase();
 
-                            System.out.println("Lista de Localidades");
-                            for (Localidade localidade : graph.getVertexes()) {
-                                System.out.println(localidade);
+                            if (startVertex3 != null && targetVertex != null) {
+
+                                Iterator<Localidade> shortestPathIterator = graph.iteratorShortestPath(startVertex3, targetVertex);
+
+                                jogador1.setIteradorDFSParaBot(b, numBots, shortestPathIterator);
+                            } else {
+                                System.out.println("Erro para colocar  bot na base onde esta a flag do jogador");
                             }
-
-                            Localidade startVertex3 = null;
-                            Localidade targetVertex3 = null;
-                            do {
-                                System.out.println("Introduza o nome da sua localizacao inicial: ");
-                                String localidadeInicial = scan.next();
-                                System.out.println("Introduza o nome da sua localizacao final: ");
-                                String localidadeFinal = scan.next();
-
-                                for (Localidade localidade : graph.getVertexes()) {
-                                    if (localidade.getNome().equalsIgnoreCase(localidadeInicial)) {
-                                        startVertex3 = localidade;
-                                        break;
-                                    } else {
-                                        System.out.println("Nome do vertice nao existe no grafo");
-                                    }
-                                }
-
-                                for (Localidade localidade2 : graph.getVertexes()) {
-                                    if (localidade2.getNome().equalsIgnoreCase(localidadeFinal)) {
-                                        targetVertex3 = localidade2;
-                                        break;
-                                    } else {
-                                        System.out.println("Nome do vertice nao existe no grafo");
-                                    }
-                                }
-                            } while (startVertex3 != null && targetVertex3 != null);
-
-                            jogador1.setIteradorShortestPathParaBot(b, graph.iteratorShortestPath(startVertex3, targetVertex3));
+                            b++;
+                            
                             break;
                     }
 
-                } while (b != numBots);
+
+
 
             }
 
+            System.out.println("\n\n");
             System.out.println("Padronização de bots para o jogador 2");
-            for (int b = 0; b <= numBots; b++) {
-                System.out.println("Bot numero " + b + " para o jogador 2");
-                do {
+            for (int b = 1; b <= numBots;) {
+                System.out.println("Bot numero " + b + " para o jogador 1");
+                
                     System.out.println();
                     System.out.println("======== Iterador para o bot " + b + " ========");
-                    System.out.println("      1. Travessia por largura (BFS)       ");//por retirar
+                    System.out.println("      1. Travessia por largura (BFS)       ");
                     System.out.println("    2. Travessia por profundidade (DFS)    ");
                     System.out.println("            3. Shortest Path               ");
                     System.out.println("===========================================");
@@ -363,97 +347,56 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
 
                     switch (opcao) {
                         case 1:
-                            System.out.println("Foi escolhido a travessia BFS para o bot" + b);
+                            System.out.println("Foi escolhido a travessia BFS para o bot " + b);
 
-                            System.out.println("Lista de Localidades");
-                            for (Localidade localidade : graph.getVertexes()) {
-                                System.out.println(localidade);
+                            Localidade startVertex = jogador1.getBase();
+
+                            if (startVertex != null) {
+
+                                Iterator<Localidade> bfsIterator = graph.iteratorBFS(startVertex);
+
+                                jogador1.setIteradorBFSParaBot(b, numBots, bfsIterator);
+                            } else {
+                                System.out.println("Erro para colocar  bot na base onde esta a flag do jogador");
                             }
-
-                            Localidade startVertex = null;
-                            do {
-                                System.out.println("Introduza o nome da sua localizacao inicial: ");
-                                String localidadeInicial = scan.next();
-                                for (Localidade localidade : graph.getVertexes()) {
-                                    if (localidade.getNome().equalsIgnoreCase(localidadeInicial)) {
-                                        startVertex = localidade;
-                                        break;
-                                    } else {
-                                        System.out.println("Nome do vertice nao existe no grafo");
-                                    }
-                                }
-                            } while (startVertex != null);
-
-                            jogador1.setIteradorBFSParaBot(b, graph.iteratorBFS(startVertex));
+                            b++;
                             break;
 
                         case 2:
                             System.out.println("Foi escolhido a travessia DFS para o bot" + b);
 
-                            System.out.println("Lista de Localidades");
-                            for (Localidade localidade : graph.getVertexes()) {
-                                System.out.println(localidade);
+                            Localidade startVertex2 = jogador1.getBase();
+
+                            if (startVertex2 != null) {
+
+                                Iterator<Localidade> dfsIterator = graph.iteratorDFS(startVertex2);
+
+                                jogador1.setIteradorDFSParaBot(b, numBots, dfsIterator);
+                            } else {
+                                System.out.println("Erro para colocar  bot na base onde esta a flag do jogador");
                             }
-
-                            Localidade startVertex2 = null;
-                            do {
-                                System.out.println("Introduza o nome da sua localizacao inicial: ");
-                                String localidadeInicial = scan.next();
-                                for (Localidade localidade : graph.getVertexes()) {
-                                    if (localidade.getNome().equalsIgnoreCase(localidadeInicial)) {
-                                        startVertex = localidade;
-                                        break;
-                                    } else {
-                                        System.out.println("Nome do vertice nao existe no grafo");
-                                    }
-                                }
-                            } while (startVertex2 != null);
-
-                            jogador1.setIteradorDFSParaBot(b, graph.iteratorDFS(startVertex2));
+                            b++;
                             break;
                         case 3:
                             System.out.println("Foi escolhido a travessia Shortest Path para o bot" + b);
 
-                            System.out.println("Foi escolhido a travessia DFS para o bot" + b);
+                            Localidade startVertex3 = jogador1.getBase();
+                            Localidade targetVertex = jogador2.getBase();
 
-                            System.out.println("Lista de Localidades");
-                            for (Localidade localidade : graph.getVertexes()) {
-                                System.out.println(localidade);
+                            if (startVertex3 != null && targetVertex != null) {
+
+                                Iterator<Localidade> shortestPathIterator = graph.iteratorShortestPath(startVertex3, targetVertex);
+
+                                jogador1.setIteradorShortestPathParaBot(b, numBots, shortestPathIterator);
+                            } else {
+                                System.out.println("Erro para colocar  bot na base onde esta a flag do jogador");
                             }
-
-                            Localidade startVertex3 = null;
-                            Localidade targetVertex3 = null;
-                            do {
-                                System.out.println("Introduza o nome da sua localizacao inicial: ");
-                                String localidadeInicial = scan.next();
-                                System.out.println("Introduza o nome da sua localizacao final: ");
-                                String localidadeFinal = scan.next();
-
-                                for (Localidade localidade : graph.getVertexes()) {
-                                    if (localidade.getNome().equalsIgnoreCase(localidadeInicial)) {
-                                        startVertex3 = localidade;
-                                        break;
-                                    } else {
-                                        System.out.println("Nome do vertice nao existe no grafo");
-                                    }
-                                }
-
-                                for (Localidade localidade2 : graph.getVertexes()) {
-                                    if (localidade2.getNome().equalsIgnoreCase(localidadeFinal)) {
-                                        targetVertex3 = localidade2;
-                                        break;
-                                    } else {
-                                        System.out.println("Nome do vertice nao existe no grafo");
-                                    }
-                                }
-                            } while (startVertex3 != null && targetVertex3 != null);
-
-                            jogador1.setIteradorShortestPathParaBot(b, graph.iteratorShortestPath(startVertex3, targetVertex3));
+                            b++;                          
                             break;
                     }
 
-                } while (b != numBots);
             }
+            
         }
 
         do {

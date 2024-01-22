@@ -76,5 +76,11 @@ public class Localidade {
         final Localidade other = (Localidade) obj;
         return this.id == other.id;
     }
+    
+    @Override
+    public String toString() {
+        return "Nome: " + nome;
+    }
+
 
 }
