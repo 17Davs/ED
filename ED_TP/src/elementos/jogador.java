@@ -28,6 +28,7 @@ public class Jogador {
 
     public int getId() {
         return id;
+
     }
 
     public ListADT<Bot> getBots() {

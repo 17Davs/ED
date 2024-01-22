@@ -4,17 +4,10 @@
  */
 package estruturas;
 
-import interfacesADT.UnorderedListADT;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+
 
 /**
  *
@@ -42,6 +35,7 @@ public class Network<T> implements NetworkADT<T> {
         this.vertices = (T[]) (new Object[capacidade]);
     }
 
+    
     @Override
     public void addVertex(T vertex) {
         if (vertices.length == size()) {
@@ -56,7 +50,7 @@ public class Network<T> implements NetworkADT<T> {
         }
     }
 
-    private int findIndex(T vertex) {
+    protected int findIndex(T vertex) {
         for (int i = 0; i < numVertices; i++) {
             if (vertices[i].equals(vertex)) {
                 return i;
@@ -388,22 +382,7 @@ public class Network<T> implements NetworkADT<T> {
         return priorityQueue.iteratorInOrder();
         
     }   
-    
-
-    @Override
-    public void addEdge(T vertex1, T vertex2, double weight) {
-        int index1 = findIndex(vertex1);
-        int index2 = findIndex(vertex2);
-
-        if (indexIsValid(index1) && indexIsValid(index2)) {
-            adjMatrix[index1][index2] = weight;
-            adjMatrix[index2][index1] = weight;
-        } else {
-            throw new IllegalArgumentException("Vértices inválidos: " + vertex1 + ", " + vertex2);
-        }
-    }
-    
-    public boolean hasEdge(T vertex1, T vertex2) {
+     public boolean hasEdge(T vertex1, T vertex2) {
         int index1 = findIndex(vertex1);
         int index2 = findIndex(vertex2);
 
@@ -420,88 +399,23 @@ public class Network<T> implements NetworkADT<T> {
         }
         return false;
     }
+   
+     
     
-    public void exportToJSON(String filePath) {
-        JSONObject mapaJSON = new JSONObject();
-        mapaJSON.put("Numero de vertices", numVertices);
+    @Override
+    public void addEdge(T vertex1, T vertex2, double weight) {
+        int index1 = findIndex(vertex1);
+        int index2 = findIndex(vertex2);
 
-        
-        JSONArray localizacoesJSON = new JSONArray();
-        for (int i = 0; i < numVertices; i++) {
-            JSONObject localizacaoJSON = new JSONObject();
-            localizacaoJSON.put("Nome", vertices[i].toString()); 
-            localizacoesJSON.add(localizacaoJSON);
-        }
-        mapaJSON.put("Localizacoes", localizacoesJSON);
-
-        JSONArray arestasJSON = new JSONArray();
-        for (int i = 0; i < numVertices; i++) {
-            for (int j = 0; j < numVertices; j++) {
-                if (isAdjacent(i, j)) {
-                    JSONObject arestaJSON = new JSONObject();
-                    arestaJSON.put("LocalizacaoOrigem", vertices[i].toString());  
-                    arestaJSON.put("LocalizacaoDestino", vertices[j].toString());  
-                    arestaJSON.put("Peso", adjMatrix[i][j]);
-                    arestasJSON.add(arestaJSON);
-                }
-            }
-        }
-        mapaJSON.put("Arestas", arestasJSON);
-
-        try (FileWriter file = new FileWriter(filePath)) {
-            file.write(mapaJSON.toJSONString());
-            System.out.println("Mapa exportado com sucesso para: " + filePath);
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (indexIsValid(index1) && indexIsValid(index2)) {
+            adjMatrix[index1][index2] = weight;
+            adjMatrix[index2][index1] = weight;
+        } else {
+            throw new IllegalArgumentException("Vértices inválidos: " + vertex1 + ", " + vertex2);
         }
     }
     
-    public void importJSON(String filePath) {
-        JSONParser jsonParser = new JSONParser();
-
-        try (FileReader reader = new FileReader(filePath)) {
-            JSONObject jsonObject = null;
-            try {
-                jsonObject = (JSONObject) jsonParser.parse(reader);
-            } catch (ParseException ex) {
-                Logger.getLogger(Network.class.getName()).log(Level.SEVERE, null, ex);
-            }
-
-            long numVertices = (Long) jsonObject.get("Numero de vertices");
-            JSONArray arestas = (JSONArray) jsonObject.get("Arestas");
-
-            for (long i = 0; i < numVertices; i++) {
-                // Adicione seus vértices ao grafo, dependendo da estrutura do JSON
-            }
-
-            for (Object arestaObj : arestas) {
-                JSONObject aresta = (JSONObject) arestaObj;
-                long origem = (Long) aresta.get("Origem");
-                long destino = (Long) aresta.get("Destino");
-                double peso = (Double) aresta.get("Peso");
-
-            }
-        } catch (IOException e) {
-            e.printStackTrace(); 
-        }
-    }
-    
-    public void showMapa() {
-        System.out.println("Vertices:");
-        for (int i = 0; i < numVertices; i++) {
-            System.out.println(vertices[i]);
-        }
-
-        System.out.println("\nArestas:");
-        for (int i = 0; i < numVertices; i++) {
-            for (int j = 0; j < numVertices; j++) {
-                if (isAdjacent(i, j)) {
-                    System.out.println(vertices[i] + " -- " + vertices[j] + " (Peso: " + adjMatrix[i][j] + ")");
-                }
-            }
-        }
-    }
-
+   
 
 
 }
