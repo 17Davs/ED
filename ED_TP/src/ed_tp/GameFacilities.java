@@ -5,10 +5,13 @@
 package ed_tp;
 
 import elementos.Localidade;
+import estruturas.ArrayUnorderedList;
 import java.util.Random;
 import java.util.Scanner;
 import estruturas.Network;
 import estruturas.NetworkADT;
+import java.util.Iterator;
+import jdk.nashorn.api.tree.NewTree;
 
 /**
  *
@@ -28,12 +31,35 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
     public GameFacilities() {
         graph = new Network<>();
     }
-
     
+    public void criarFlags(){
+        Localidade[] localidades = ((Network)graph).getVertexes();
+        
+        
+        System.out.println("========   Criação das Flags   ========");
+        System.out.println("              Jogador 1                ");
+        int contador=0; 
+        for(Localidade l: localidades){
+            System.out.println(++contador);
+        }
+        
+        
+        System.out.print("Introduza sua opcao por favor:");
+        int  = scan.nextInt();
+        System.out.println("           2. Bidirecional             ");
+        System.out.println("==================================");
+
+        //listar as lovalidades 
+        
+        System.out.print("Introduza sua opcao por favor:");
+        opcao = scan.nextInt();
+    
+}
     
     @Override
     public  void criarMapa() {
-
+        //garantir que o mapa é gerado do zero
+        graph = new Network<>();
         int preenchimento = 0;
         int cont = 0;
 
@@ -141,4 +167,6 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
 
     }
 
+    
+    
 }
