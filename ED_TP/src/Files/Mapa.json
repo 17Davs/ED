@@ -20,6 +20,74 @@
         }, {
             "Nome": "elementos.Localidade@69d0a921"
         }],
-    "Arestas": [],
+    "Arestas": [{
+            "Destino": 2,
+            "Peso": 5.11181171E8,
+            "Origem": 0
+        }, {
+            "Destino": 4,
+            "Peso": 1.2039489E7,
+            "Origem": 1
+        }, {
+            "Destino": 0,
+            "Peso": 5.11181171E8,
+            "Origem": 2
+        }, {
+            "Destino": 5,
+            "Peso": 7.43058363E8,
+            "Origem": 2
+        }, {
+            "Destino": 6,
+            "Peso": 5.60341337E8,
+            "Origem": 2
+        }, {
+            "Destino": 7,
+            "Peso": 4.49050089E8,
+            "Origem": 2
+        }, {
+            "Destino": 8,
+            "Peso": 1.482940657E9,
+            "Origem": 3
+        }, {
+            "Destino": 1,
+            "Peso": 1.2039489E7,
+            "Origem": 4
+        }, {
+            "Destino": 2,
+            "Peso": 7.43058363E8,
+            "Origem": 5
+        }, {
+            "Destino": 2,
+            "Peso": 5.60341337E8,
+            "Origem": 6
+        }, {
+            "Destino": 2,
+            "Peso": 4.49050089E8,
+            "Origem": 7
+        }, {
+            "Destino": 9,
+            "Peso": 9.10732375E8,
+            "Origem": 7
+        }, {
+            "Destino": 3,
+            "Peso": 1.482940657E9,
+            "Origem": 8
+        }, {
+            "Destino": 9,
+            "Peso": 1.920518567E9,
+            "Origem": 8
+        }, {
+            "Destino": 7,
+            "Peso": 9.10732375E8,
+            "Origem": 9
+        }, {
+            "Destino": 8,
+            "Peso": 1.920518567E9,
+            "Origem": 9
+        }, {
+            "Destino": 9,
+            "Peso": 8.4929653E7,
+            "Origem": 9
+        }],
     "NumeroVertices": 10
 }

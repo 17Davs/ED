@@ -169,21 +169,23 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
             System.out.println("     1. Exportar o mapa e jogar   ");
             System.out.println("2. Apenas jogar sem guardar o mapa");
             System.out.println("==================================");
-            
+
             System.out.print("Introduza sua opcao por favor:");
             opcao2 = scan.nextInt();
-            
+
             switch (opcao2) {
                 case 1:
-                    graph.exportToJSON(currentWorkingDir + "/src/Files/Mapa.json");
+                    System.out.print("Indica o nome do mapa: ");
+                    String nomeMapa = scan.next();
+                    graph.exportToJSON(currentWorkingDir + "/src/Files/" + nomeMapa + ".json");
                     iniciarJogo();
                     break;
                 case 2:
                     iniciarJogo();
                     break;
-            }       
+            }
         } while (opcao2 != 1 && opcao2 != 2);
-        
+
     }
 
     void iniciarJogo() {
@@ -226,28 +228,41 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
                             System.out.println("Foi escolhido a travessia BFS para o bot" + b);
 
                             System.out.println("Lista de Localidades");
-                            for (Localidade localidade : graph.getVertexes()) {
-                                System.out.println(localidade);
+                            Object[] vertexArray = graph.getVertexes();
+                            for (Object obj : vertexArray) {
+                                try {
+                                    Localidade localidade = (Localidade) obj;
+                                    System.out.println(localidade);
+                                } catch (ClassCastException e) {
+                                    System.out.println("Erro: O objeto não é do tipo Localidade");
+                                    e.printStackTrace(); // print the stack trace for debugging
+                                }
                             }
 
                             Localidade startVertex = null;
                             do {
                                 System.out.println("Introduza o nome da sua localizacao inicial: ");
                                 String localidadeInicial = scan.next();
-                                for (Localidade localidade : graph.getVertexes()) {
-                                    if (localidade.getNome().equalsIgnoreCase(localidadeInicial)) {
-                                        startVertex = localidade;
-                                        break;
-                                    } else {
-                                        System.out.println("Nome do vertice nao existe no grafo");
+                                for (Object obj : vertexArray) {
+                                    try {
+                                        Localidade localidade = (Localidade) obj;
+                                        if (localidade.getNome().equalsIgnoreCase(localidadeInicial)) {
+                                            startVertex = localidade;
+                                            break;
+                                        }
+                                    } catch (ClassCastException e) {
+                                        System.out.println("Erro: O objeto não é do tipo Localidade");
+                                        e.printStackTrace(); // print the stack trace for debugging
                                     }
                                 }
-                            } while (startVertex != null);
+                                if (startVertex == null) {
+                                    System.out.println("Nome do vertice nao existe no grafo");
+                                }
+                            } while (startVertex == null);
 
                              {
-
-                                jogador1.setIteradorBFSParaBot(b, graph.iteratorBFS(startVertex));
-
+                                Iterator<Localidade> bfsIterator = graph.iteratorBFS(startVertex);
+                                jogador1.setIteradorBFSParaBot(b, bfsIterator);
                             }
                             break;
 
