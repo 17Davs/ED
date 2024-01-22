@@ -24,6 +24,7 @@ public class ED_TP {
         GameFacilities game = new GameFacilities<>();
         Mapa map = new Mapa<>();
         String currentWorkingDir = System.getProperty("user.dir");
+        String nMapa;
 
         /*
         int nBots = 3;
@@ -74,7 +75,8 @@ public class ED_TP {
                 case 2:
                     System.out.println("Importação de um mapa!");
                     System.out.print("Introduza o nome do mapa:");
-                    String nMapa = scan.next();
+                    nMapa = scan.next();
+                    game.nomeMapa = nMapa;
                     map.importJSON(currentWorkingDir + "/src/Files/" + nMapa + ".json");
                     game.iniciarJogo();
                     break;
