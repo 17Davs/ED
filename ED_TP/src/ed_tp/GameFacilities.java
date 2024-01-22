@@ -29,7 +29,7 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
     private int numVertices;
     private int numArestas = 0;
     private Jogador jogadorAtual;
-    
+
     private static final String currentWorkingDir = System.getProperty("user.dir");
 
     private String name;
@@ -42,18 +42,18 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
     public void criarFlags() {
         Localidade[] localidades = graph.getVertexes();
         int i = 0;
-        
+
         System.out.println("========   Criação das Flags   ========");
         System.out.println("              Jogador 1                ");
-        for (i=0;i<localidades.length;i++) {
-            System.out.println((i+1) + ". " + localidades[i].getNome());
+        for (i = 0; i < localidades.length; i++) {
+            System.out.println((i + 1) + ". " + localidades[i].getNome());
         }
         System.out.print("Escolha onde deseja colocar sua Flag: ");
         int opcao = scan.nextInt();
-        
+
         if (opcao >= 1 && opcao <= localidades.length) {
             Flag flag = new Flag(jogadorAtual);
-                        localidades[opcao-1].setFlag(flag);
+            localidades[opcao - 1].setFlag(flag);
         }
         System.out.println("           2. Bidirecional             ");
         System.out.println("==================================");
@@ -104,7 +104,7 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
 
             System.out.print("Introduza sua opcao por favor:");
             opcao = scan.nextInt();
-
+            int contador = 0;
             switch (opcao) {
                 case 1:
 
@@ -133,7 +133,7 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
 
                         switch (opcao) {
                             case 1:
-                                int contador=0;
+
                                 //certificar se fica bem dentro do ciclo isConnected()
                                 do {
                                     while (contador < numArestas) {

@@ -37,10 +37,7 @@ public class Mapa<T> extends Network<T>{
         return temp;
      }
       
-
     
-      
-      
     public void exportToJSON(String filePath) {
         JSONObject mapaJSON = new JSONObject();
         mapaJSON.put("NumeroVertices", numVertices);

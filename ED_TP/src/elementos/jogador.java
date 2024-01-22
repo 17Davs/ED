@@ -20,16 +20,27 @@ public class Jogador {
     private int id;
     private static int proximoID = 0;
     private ArrayUnorderedList<Bot> bots;
-
+    private Localidade base;
+    
     public Jogador(int quantidadeBots) {
         this.id = ++proximoID;
         this.bots = new ArrayUnorderedList<>(quantidadeBots);
+        this.base=null;
     }
 
     public int getId() {
         return id;
 
     }
+
+    public Localidade getBase() {
+        return base;
+    }
+
+    public void setBase(Localidade base) {
+        this.base = base;
+    }
+    
 
     public ListADT<Bot> getBots() {
         return bots;
