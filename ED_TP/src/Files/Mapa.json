@@ -1,1 +1,25 @@
-{"Localidades":[{"Nome":"elementos.Localidade@27fa135a"},{"Nome":"elementos.Localidade@46f7f36a"},{"Nome":"elementos.Localidade@421faab1"},{"Nome":"elementos.Localidade@2b71fc7e"},{"Nome":"elementos.Localidade@5ce65a89"},{"Nome":"elementos.Localidade@25f38edc"},{"Nome":"elementos.Localidade@1a86f2f1"},{"Nome":"elementos.Localidade@3eb07fd3"},{"Nome":"elementos.Localidade@506c589e"},{"Nome":"elementos.Localidade@69d0a921"}],"Arestas":[],"NumeroVertices":10}
+{
+    "Localidades": [{
+            "Nome": "elementos.Localidade@27fa135a"
+        }, {
+            "Nome": "elementos.Localidade@46f7f36a"
+        }, {
+            "Nome": "elementos.Localidade@421faab1"
+        }, {
+            "Nome": "elementos.Localidade@2b71fc7e"
+        }, {
+            "Nome": "elementos.Localidade@5ce65a89"
+        }, {
+            "Nome": "elementos.Localidade@25f38edc"
+        }, {
+            "Nome": "elementos.Localidade@1a86f2f1"
+        }, {
+            "Nome": "elementos.Localidade@3eb07fd3"
+        }, {
+            "Nome": "elementos.Localidade@506c589e"
+        }, {
+            "Nome": "elementos.Localidade@69d0a921"
+        }],
+    "Arestas": [],
+    "NumeroVertices": 10
+}

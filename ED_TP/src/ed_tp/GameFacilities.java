@@ -26,7 +26,7 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
     Scanner scan = new Scanner(System.in);
     Random random = new Random();
     private int numVertices;
-    private int numArestas;
+    private int numArestas = 0;
     private int contador = 0;
     private static final String currentWorkingDir = System.getProperty("user.dir");
 
@@ -85,7 +85,9 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
         System.out.print("Introduza a percentagem de o quanto deseja que o mapa seja conectado:");
         preenchimento = scan.nextInt();
 
-        numArestas = (numVertices * (numVertices - 1)) * (preenchimento / 100);
+        numArestas = (int) ((numVertices * (numVertices - 1)) * ((double) preenchimento / 100));
+
+        System.out.println("numVertices:"+numVertices+"  preenchimento: "+preenchimento);
         System.out.println("Calculo de arestas ficou igual a :" + numArestas);
 
         do {
