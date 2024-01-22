@@ -86,8 +86,6 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
         preenchimento = scan.nextInt();
 
         numArestas = (int) ((numVertices * (numVertices - 1)) * ((double) preenchimento / 100));
-
-        System.out.println("numVertices:"+numVertices+"  preenchimento: "+preenchimento);
         System.out.println("Calculo de arestas ficou igual a :" + numArestas);
 
         do {
