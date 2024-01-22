@@ -28,6 +28,7 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
     private int numVertices;
     private int numArestas;
     private int contador = 0;
+    private static final String currentWorkingDir = System.getProperty("user.dir");
 
     private String name;
     Mapa<Localidade> graph;
@@ -157,12 +158,32 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
                                 }
                                 break;
                         }
-                    } while (opcao != 1 || opcao != 2);
+                    } while (opcao != 1 && opcao != 2);
                     break;
 
             }
-        } while (opcao != 1 || opcao != 2);
-        iniciarJogo();
+        } while (opcao != 1 && opcao != 2);
+        int opcao2 = 0;
+        do {
+            System.out.println("============  Export  ============");
+            System.out.println("     1. Exportar o mapa e jogar   ");
+            System.out.println("2. Apenas jogar sem guardar o mapa");
+            System.out.println("==================================");
+            
+            System.out.print("Introduza sua opcao por favor:");
+            opcao2 = scan.nextInt();
+            
+            switch (opcao2) {
+                case 1:
+                    graph.exportToJSON(currentWorkingDir + "/src/Files/Mapa.json");
+                    iniciarJogo();
+                    break;
+                case 2:
+                    iniciarJogo();
+                    break;
+            }       
+        } while (opcao2 != 1 && opcao2 != 2);
+        
     }
 
     void iniciarJogo() {

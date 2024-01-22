@@ -41,7 +41,7 @@ public class ED_TP {
                     break;
                 case 2:
                     System.out.println("Importação de um mapa!");
-                    game.importMapa();
+                    //game.importMapa();
                     break;
                 case 0:
                     System.out.println("Fechando o jogo!");
