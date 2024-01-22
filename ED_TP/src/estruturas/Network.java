@@ -5,14 +5,16 @@
 package estruturas;
 
 import interfacesADT.UnorderedListADT;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.PriorityQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 /**
  *
@@ -22,8 +24,7 @@ public class Network<T> implements NetworkADT<T> {
 
     protected final int DEFAULT_CAPACITY = 10;
     protected int numVertices;
-    protected double[][] matrizPeso;
-    protected boolean[][] adjMatrix;
+    protected double[][] adjMatrix;
     protected T[] vertices;
 
     /*
@@ -31,8 +32,14 @@ public class Network<T> implements NetworkADT<T> {
      */
     public Network() {
         numVertices = 0;
-        this.matrizPeso = new double[DEFAULT_CAPACITY][DEFAULT_CAPACITY];
+        this.adjMatrix = new double[DEFAULT_CAPACITY][DEFAULT_CAPACITY];
         this.vertices = (T[]) (new Object[DEFAULT_CAPACITY]);
+    }
+    
+    public Network (int capacidade) {
+        numVertices = 0;
+        this.adjMatrix = new double[capacidade][capacidade];
+        this.vertices = (T[]) (new Object[capacidade]);
     }
 
     @Override
@@ -42,8 +49,8 @@ public class Network<T> implements NetworkADT<T> {
         } else {
             vertices[numVertices] = vertex;
             for (int i = 0; i <= numVertices; i++) {
-                matrizPeso[numVertices][i] = 0;
-                matrizPeso[i][numVertices] = 0;
+                adjMatrix[numVertices][i] = 0;
+                adjMatrix[i][numVertices] = 0;
             }
             numVertices++;
         }
@@ -67,11 +74,11 @@ public class Network<T> implements NetworkADT<T> {
         }
         for (int i = 0; i < numVertices; i++) {
             for (int j = 0; j < numVertices; j++) {
-                newAdjMatrix[i][j] = matrizPeso[i][j];
+                newAdjMatrix[i][j] = adjMatrix[i][j];
             }
         }
         vertices = newVertices;
-        matrizPeso = newAdjMatrix;
+        adjMatrix = newAdjMatrix;
     }
 
     @Override
@@ -83,22 +90,22 @@ public class Network<T> implements NetworkADT<T> {
                 vertices[pos] = vertices[numVertices - 1];
 
                 for (int i = 0; i < numVertices; i++) {
-                    matrizPeso[i][pos] = matrizPeso[i][numVertices - 1];
-                    matrizPeso[pos][i] = matrizPeso[numVertices - 1][i];
+                    adjMatrix[i][pos] = adjMatrix[i][numVertices - 1];
+                    adjMatrix[pos][i] = adjMatrix[numVertices - 1][i];
                 }
 
                 numVertices--;
 
                 vertices[numVertices] = null;
                 for (int i = 0; i < numVertices; i++) {
-                    matrizPeso[numVertices][i] = 0;
-                    matrizPeso[i][numVertices] = 0;
+                    adjMatrix[numVertices][i] = 0;
+                    adjMatrix[i][numVertices] = 0;
                 }
 
             } else {
                 numVertices = 0;
                 vertices[0] = null;
-                matrizPeso[0][0] = 0;
+                adjMatrix[0][0] = 0;
             }
 
         }
@@ -123,8 +130,8 @@ public class Network<T> implements NetworkADT<T> {
     //se estamos a usar um network nao usaremos arestas sem peso
     public void addEdge(int index1, int index2) {
         if (indexIsValid(index1) && indexIsValid(index2)) {
-            adjMatrix[index1][index2] = true;
-            adjMatrix[index2][index1] = true;
+            //adjMatrix[index1][index2] = true;
+            //adjMatrix[index2][index1] = true;
         }
     }
 
@@ -135,8 +142,8 @@ public class Network<T> implements NetworkADT<T> {
 
     private void remvoveEdge(int index1, int index2) {
         if (indexIsValid(index1) && indexIsValid(index2)) {
-            adjMatrix[index1][index2] = false;
-            adjMatrix[index2][index1] = false;
+            //adjMatrix[index1][index2] = false;
+            //adjMatrix[index2][index1] = false;
         }
     }
 
@@ -247,26 +254,12 @@ public class Network<T> implements NetworkADT<T> {
     
     private double getEdgeWeight(int currentVertex, int neighbor) {
         if (indexIsValid(currentVertex) && indexIsValid(neighbor)) {
-            return matrizPeso[currentVertex][neighbor];
+            return adjMatrix[currentVertex][neighbor];
         } else {
             return 0;
         }
     }
 
-    private List<T> buildShortestPath(Map<Integer, Integer> previousVertices, int start, int target) {
-        List<T> path = new ArrayList<>();
-        int current = target;
-
-        while (current != start) {
-            path.add(vertices[current]);
-            current = previousVertices.get(current);
-        }
-
-        path.add(vertices[start]);
-        Collections.reverse(path);
-
-        return path;
-    }
 
     @Override
     public boolean isEmpty() {
@@ -323,6 +316,16 @@ public class Network<T> implements NetworkADT<T> {
     @Override
     public double shortestPathWeight(T vertex1, T vertex2) {
         
+        int somatorio = 0;
+        Iterator iterator = iteratorShortestPath(vertex1, vertex2);
+        
+        while (iterator.hasNext()) {
+            PriorityQueueNode<T> node = (PriorityQueueNode<T>) iterator.next();
+            somatorio += node.getPriority();
+        }
+        
+        return somatorio;
+        
     }
 
     private boolean indexIsValid(int index) {
@@ -337,14 +340,53 @@ public class Network<T> implements NetworkADT<T> {
     
     public Iterator iteratorShortestPath(int startIndex, int targetIndex) {
         
-        double[] distances = new double[numVertices];
-        distances[startIndex] = 0;
-        
+        int[] distances = new int[numVertices];
+        int[] predecessors = new int[numVertices];
+
+        // Initialize distances and predecessors
         for (int i = 0; i < numVertices; i++) {
-            if (i != startIndex) {
-                distances[i] = -1;
+            if (i == startIndex) {
+                distances[i] = 0;
+            } else {
+                distances[i] = Integer.MAX_VALUE;
+            }
+            predecessors[i] = -1;
+        }
+
+        PriorityQueue<T> priorityQueue = new PriorityQueue<>();
+        for (int i = 0; i < numVertices; i++){
+            priorityQueue.addElement(vertices[i], (int) distances[i]);
+        }
+
+        // Process vertices using Dijkstra's algorithm
+        while (!priorityQueue.isEmpty()) {
+            PriorityQueueNode<T> minNode = null;
+            try {
+                minNode = priorityQueue.removeMin();
+            } catch (EmptyCollectionException ex) {
+                Logger.getLogger(Network.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            int u = getIndex(minNode.getElement());
+
+            // Update distances and predecessors
+            for (int v = 0; v < numVertices; v++) {
+                if (isAdjacent(u, v) && distances[u] + getEdgeWeight(u, v) < distances[v]) {
+                    distances[v] = (int) (distances[u] + getEdgeWeight(u, v));
+                    predecessors[v] = u;
+
+                    try {
+                        // Update priority in the priority queue
+                        ((PriorityQueue)priorityQueue).update(vertices[v], (int) distances[v]);
+                    } catch (ElementNotFoundException ex) {
+                        Logger.getLogger(Network.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (EmptyCollectionException ex) {
+                        Logger.getLogger(Network.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
             }
         }
+        return priorityQueue.iteratorInOrder();
+        
     }   
     
 
@@ -354,8 +396,8 @@ public class Network<T> implements NetworkADT<T> {
         int index2 = findIndex(vertex2);
 
         if (indexIsValid(index1) && indexIsValid(index2)) {
-            matrizPeso[index1][index2] = weight;
-            matrizPeso[index2][index1] = weight;
+            adjMatrix[index1][index2] = weight;
+            adjMatrix[index2][index1] = weight;
         } else {
             throw new IllegalArgumentException("Vértices inválidos: " + vertex1 + ", " + vertex2);
         }
@@ -366,11 +408,100 @@ public class Network<T> implements NetworkADT<T> {
         int index2 = findIndex(vertex2);
 
         if (indexIsValid(index1) && indexIsValid(index2)) {
-            return matrizPeso[index1][index2] != 0;
+            return adjMatrix[index1][index2] != 0;
         } else {
             throw new IllegalArgumentException("Vértices inválidos: " + vertex1 + ", " + vertex2);
         }
     }
+    
+    public boolean isAdjacent(int vertex1, int vertex2) {
+        if (getEdgeWeight(vertex1, vertex2) > 0) {
+            return true;
+        }
+        return false;
+    }
+    
+    public void exportToJSON(String filePath) {
+        JSONObject mapaJSON = new JSONObject();
+        mapaJSON.put("Numero de vertices", numVertices);
+
+        
+        JSONArray localizacoesJSON = new JSONArray();
+        for (int i = 0; i < numVertices; i++) {
+            JSONObject localizacaoJSON = new JSONObject();
+            localizacaoJSON.put("Nome", vertices[i].toString()); 
+            localizacoesJSON.add(localizacaoJSON);
+        }
+        mapaJSON.put("Localizacoes", localizacoesJSON);
+
+        JSONArray arestasJSON = new JSONArray();
+        for (int i = 0; i < numVertices; i++) {
+            for (int j = 0; j < numVertices; j++) {
+                if (isAdjacent(i, j)) {
+                    JSONObject arestaJSON = new JSONObject();
+                    arestaJSON.put("LocalizacaoOrigem", vertices[i].toString());  
+                    arestaJSON.put("LocalizacaoDestino", vertices[j].toString());  
+                    arestaJSON.put("Peso", adjMatrix[i][j]);
+                    arestasJSON.add(arestaJSON);
+                }
+            }
+        }
+        mapaJSON.put("Arestas", arestasJSON);
+
+        try (FileWriter file = new FileWriter(filePath)) {
+            file.write(mapaJSON.toJSONString());
+            System.out.println("Mapa exportado com sucesso para: " + filePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    public void importJSON(String filePath) {
+        JSONParser jsonParser = new JSONParser();
+
+        try (FileReader reader = new FileReader(filePath)) {
+            JSONObject jsonObject = null;
+            try {
+                jsonObject = (JSONObject) jsonParser.parse(reader);
+            } catch (ParseException ex) {
+                Logger.getLogger(Network.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            long numVertices = (Long) jsonObject.get("Numero de vertices");
+            JSONArray arestas = (JSONArray) jsonObject.get("Arestas");
+
+            for (long i = 0; i < numVertices; i++) {
+                // Adicione seus vértices ao grafo, dependendo da estrutura do JSON
+            }
+
+            for (Object arestaObj : arestas) {
+                JSONObject aresta = (JSONObject) arestaObj;
+                long origem = (Long) aresta.get("Origem");
+                long destino = (Long) aresta.get("Destino");
+                double peso = (Double) aresta.get("Peso");
+
+            }
+        } catch (IOException e) {
+            e.printStackTrace(); 
+        }
+    }
+    
+    public void showMapa() {
+        System.out.println("Vertices:");
+        for (int i = 0; i < numVertices; i++) {
+            System.out.println(vertices[i]);
+        }
+
+        System.out.println("\nArestas:");
+        for (int i = 0; i < numVertices; i++) {
+            for (int j = 0; j < numVertices; j++) {
+                if (isAdjacent(i, j)) {
+                    System.out.println(vertices[i] + " -- " + vertices[j] + " (Peso: " + adjMatrix[i][j] + ")");
+                }
+            }
+        }
+    }
+
 
 
 }
