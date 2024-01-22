@@ -143,9 +143,9 @@ public class Network<T> implements NetworkADT<T> {
 
     
     @Override
-    public Iterator iteratorBFS(T startVertex) throws Exception {
+    public Iterator iteratorBFS(T startVertex) {
         
-        Integer x; //variavel que vai armazenar o indice atual durante a travessia
+        Integer x = null; //variavel que vai armazenar o indice atual durante a travessia
         
         LinkedQueue<Integer> travessalQueue = new LinkedQueue<Integer>();
         ArrayUnorderedList<T> resultList = new ArrayUnorderedList<T>();
@@ -177,10 +177,14 @@ public class Network<T> implements NetworkADT<T> {
         */
         while (!travessalQueue.isEmpty()) {
             
-            /*
-            Retira da queue e guarda na variavel x depois e guarda no ArrayUnorderedList
-            */
-            x = travessalQueue.dequeue();
+            try {
+                /*
+                Retira da queue e guarda na variavel x depois e guarda no ArrayUnorderedList
+                */
+                x = travessalQueue.dequeue();
+            } catch (EmptyCollectionException ex) {
+               
+            }
             resultList.addToRear(vertices[x.intValue()]);
             
             /*
@@ -202,9 +206,9 @@ public class Network<T> implements NetworkADT<T> {
     }
  
     @Override
-    public Iterator iteratorDFS(T startVertex) throws Exception {
+    public Iterator iteratorDFS(T startVertex) {
         
-        Integer x;
+        Integer x = null;
         boolean found;
         LinkedStack<Integer> traversalStack = new LinkedStack<Integer>();
         ArrayUnorderedList<T> resultList = new ArrayUnorderedList<>();
@@ -223,7 +227,11 @@ public class Network<T> implements NetworkADT<T> {
         visited[startIndex] = true;
         
         while (!traversalStack.isEmpty()) {
-            x = traversalStack.peek(); //guarda o item no topo da stack
+            try {
+                x = traversalStack.peek(); //guarda o item no topo da stack
+            } catch (EmptyCollectionException ex) {
+                
+            }
             found = false;
             
             for (int i = 0; (i < numVertices) && !found; i++) {
@@ -237,7 +245,11 @@ public class Network<T> implements NetworkADT<T> {
             }
             
             if (!found && !traversalStack.isEmpty()) {
-                traversalStack.pop();
+                try {
+                    traversalStack.pop();
+                } catch (EmptyCollectionException ex) {
+                   
+                }
             }
         }
         
@@ -415,7 +427,5 @@ public class Network<T> implements NetworkADT<T> {
         }
     }
     
-   
-
 
 }

@@ -7,6 +7,7 @@ package ed_tp;
 import elementos.Jogador;
 import elementos.Localidade;
 import estruturas.ArrayUnorderedList;
+import estruturas.Mapa;
 import java.util.Random;
 import java.util.Scanner;
 import estruturas.Network;
@@ -29,14 +30,14 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
     private int contador = 0;
 
     private String name;
-    NetworkADT<Localidade> graph;
+    Mapa<Localidade> graph;
 
     public GameFacilities() {
-        graph = new Network<>();
+        graph = new Mapa<>();
     }
 
     public void criarFlags() {
-        Localidade[] localidades = ((Network) graph).getVertexes();
+        Localidade[] localidades = graph.getVertexes();
 
         System.out.println("========   Criação das Flags   ========");
         System.out.println("              Jogador 1                ");
@@ -222,12 +223,16 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
                                 }
                             } while (startVertex != null);
 
-                            jogador1.setIteradorBFSParaBot(b, graph.iteratorBFS(startVertex));
+                             {
+
+                                jogador1.setIteradorBFSParaBot(b, graph.iteratorBFS(startVertex));
+
+                            }
                             break;
 
                         case 2:
                             System.out.println("Foi escolhido a travessia DFS para o bot" + b);
-                            
+
                             System.out.println("Lista de Localidades");
                             for (Localidade localidade : graph.getVertexes()) {
                                 System.out.println(localidade);
@@ -246,14 +251,14 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
                                     }
                                 }
                             } while (startVertex2 != null);
-                            
-                            jogador1.setIteradorDFSParaBot(b, graph.iteratorDFS(startVertex));
+
+                            jogador1.setIteradorDFSParaBot(b, graph.iteratorDFS(startVertex2));
                             break;
                         case 3:
                             System.out.println("Foi escolhido a travessia Shortest Path para o bot" + b);
-                            
+
                             System.out.println("Foi escolhido a travessia DFS para o bot" + b);
-                            
+
                             System.out.println("Lista de Localidades");
                             for (Localidade localidade : graph.getVertexes()) {
                                 System.out.println(localidade);
@@ -266,16 +271,16 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
                                 String localidadeInicial = scan.next();
                                 System.out.println("Introduza o nome da sua localizacao final: ");
                                 String localidadeFinal = scan.next();
-                                
+
                                 for (Localidade localidade : graph.getVertexes()) {
                                     if (localidade.getNome().equalsIgnoreCase(localidadeInicial)) {
-                                        startVertex = localidade;
+                                        startVertex3 = localidade;
                                         break;
                                     } else {
                                         System.out.println("Nome do vertice nao existe no grafo");
                                     }
                                 }
-                                
+
                                 for (Localidade localidade2 : graph.getVertexes()) {
                                     if (localidade2.getNome().equalsIgnoreCase(localidadeFinal)) {
                                         targetVertex3 = localidade2;
@@ -285,8 +290,8 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
                                     }
                                 }
                             } while (startVertex3 != null && targetVertex3 != null);
-                            
-                            jogador1.setIteradorShortestPathParaBot(b, graph.iteratorShortestPath(startVertex, targetVertex3));
+
+                            jogador1.setIteradorShortestPathParaBot(b, graph.iteratorShortestPath(startVertex3, targetVertex3));
                             break;
                     }
 
@@ -336,7 +341,7 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
 
                         case 2:
                             System.out.println("Foi escolhido a travessia DFS para o bot" + b);
-                            
+
                             System.out.println("Lista de Localidades");
                             for (Localidade localidade : graph.getVertexes()) {
                                 System.out.println(localidade);
@@ -355,14 +360,14 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
                                     }
                                 }
                             } while (startVertex2 != null);
-                            
-                            jogador1.setIteradorDFSParaBot(b, graph.iteratorDFS(startVertex));
+
+                            jogador1.setIteradorDFSParaBot(b, graph.iteratorDFS(startVertex2));
                             break;
                         case 3:
                             System.out.println("Foi escolhido a travessia Shortest Path para o bot" + b);
-                            
+
                             System.out.println("Foi escolhido a travessia DFS para o bot" + b);
-                            
+
                             System.out.println("Lista de Localidades");
                             for (Localidade localidade : graph.getVertexes()) {
                                 System.out.println(localidade);
@@ -375,16 +380,16 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
                                 String localidadeInicial = scan.next();
                                 System.out.println("Introduza o nome da sua localizacao final: ");
                                 String localidadeFinal = scan.next();
-                                
+
                                 for (Localidade localidade : graph.getVertexes()) {
                                     if (localidade.getNome().equalsIgnoreCase(localidadeInicial)) {
-                                        startVertex = localidade;
+                                        startVertex3 = localidade;
                                         break;
                                     } else {
                                         System.out.println("Nome do vertice nao existe no grafo");
                                     }
                                 }
-                                
+
                                 for (Localidade localidade2 : graph.getVertexes()) {
                                     if (localidade2.getNome().equalsIgnoreCase(localidadeFinal)) {
                                         targetVertex3 = localidade2;
@@ -394,8 +399,8 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
                                     }
                                 }
                             } while (startVertex3 != null && targetVertex3 != null);
-                            
-                            jogador1.setIteradorShortestPathParaBot(b, graph.iteratorShortestPath(startVertex, targetVertex3));
+
+                            jogador1.setIteradorShortestPathParaBot(b, graph.iteratorShortestPath(startVertex3, targetVertex3));
                             break;
                     }
 
@@ -418,11 +423,9 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
                 case 1:
                     break;
                 case 2:
-                    if (graph instanceof Network) {
-                        ((Network) graph).showMapa();
-                    } else {
-                        System.out.println("O objeto graph não é uma instância de Network.");
-                    }
+
+                    graph.showMapa();
+
                     break;
             }
 
