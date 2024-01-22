@@ -8,7 +8,6 @@ import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
 /**
  *
  * @author Utilizador
@@ -28,14 +27,13 @@ public class Network<T> implements NetworkADT<T> {
         this.adjMatrix = new double[DEFAULT_CAPACITY][DEFAULT_CAPACITY];
         this.vertices = (T[]) (new Object[DEFAULT_CAPACITY]);
     }
-    
-    public Network (int capacidade) {
+
+    public Network(int capacidade) {
         numVertices = 0;
         this.adjMatrix = new double[capacidade][capacidade];
         this.vertices = (T[]) (new Object[capacidade]);
     }
 
-    
     @Override
     public void addVertex(T vertex) {
         if (vertices.length == size()) {
@@ -124,8 +122,8 @@ public class Network<T> implements NetworkADT<T> {
     //se estamos a usar um network nao usaremos arestas sem peso
     public void addEdge(int index1, int index2) {
         if (indexIsValid(index1) && indexIsValid(index2)) {
-            //adjMatrix[index1][index2] = true;
-            //adjMatrix[index2][index1] = true;
+            adjMatrix[index1][index2] = 1;
+            adjMatrix[index2][index1] = 1;
         }
     }
 
@@ -141,99 +139,98 @@ public class Network<T> implements NetworkADT<T> {
         }
     }
 
-    
     @Override
     public Iterator iteratorBFS(T startVertex) {
-        
+
         Integer x = null; //variavel que vai armazenar o indice atual durante a travessia
-        
+
         LinkedQueue<Integer> travessalQueue = new LinkedQueue<Integer>();
         ArrayUnorderedList<T> resultList = new ArrayUnorderedList<T>();
-        
+
         /*
         Verifica se o index é valido se nao for entao retorna o iterador vazio
-        */
+         */
         int startIndex = getIndex(startVertex);
         if (!indexIsValid(startIndex)) {
             return resultList.iterator();
         }
-        
+
         /*
         Cria um array boolean  e coloca todos os vertices la como nao visitados
-        */
+         */
         boolean[] visited = new boolean[numVertices];
         for (int i = 0; i < numVertices; i++) {
             visited[i] = false;
         }
-        
+
         /*
         Coloca a posicao do startVertex na queue e marca a posicao como visitado
-        */
+         */
         travessalQueue.enqueue(new Integer(startIndex));
         visited[startIndex] = true;
-        
+
         /*
         Faz o while ate esvaziar a queue
-        */
+         */
         while (!travessalQueue.isEmpty()) {
-            
+
             try {
                 /*
                 Retira da queue e guarda na variavel x depois e guarda no ArrayUnorderedList
-                */
+                 */
                 x = travessalQueue.dequeue();
             } catch (EmptyCollectionException ex) {
-               
+
             }
             resultList.addToRear(vertices[x.intValue()]);
-            
+
             /*
             adiciona os vertices adjacentes de x na queue e marca como visited
-            */
+             */
             for (int i = 0; i < numVertices; i++) {
-                
+
                 double weight = getEdgeWeight(x, i);
                 if (weight > 0 && !visited[i]) {
                     travessalQueue.enqueue(new Integer(i));
                     visited[i] = true;
                 }
-                
+
             }
-            
+
         }
-        
+
         return resultList.iterator();
     }
- 
+
     @Override
     public Iterator iteratorDFS(T startVertex) {
-        
+
         Integer x = null;
         boolean found;
         LinkedStack<Integer> traversalStack = new LinkedStack<Integer>();
         ArrayUnorderedList<T> resultList = new ArrayUnorderedList<>();
-        
+
         int startIndex = getIndex(startVertex);
         if (!indexIsValid(startIndex)) {
             return resultList.iterator();
         }
-        
+
         boolean visited[] = new boolean[numVertices];
-        for (int i = 0; i < numVertices; i++){
+        for (int i = 0; i < numVertices; i++) {
             visited[i] = false;
         }
         traversalStack.push(new Integer(startIndex));
         resultList.addToRear(vertices[startIndex]);
         visited[startIndex] = true;
-        
+
         while (!traversalStack.isEmpty()) {
             try {
                 x = traversalStack.peek(); //guarda o item no topo da stack
             } catch (EmptyCollectionException ex) {
-                
+
             }
             found = false;
-            
+
             for (int i = 0; (i < numVertices) && !found; i++) {
                 double weight = getEdgeWeight(x, i);
                 if (weight > 0 && !visited[i]) {
@@ -243,21 +240,20 @@ public class Network<T> implements NetworkADT<T> {
                     found = true;
                 }
             }
-            
+
             if (!found && !traversalStack.isEmpty()) {
                 try {
                     traversalStack.pop();
                 } catch (EmptyCollectionException ex) {
-                   
+
                 }
             }
         }
-        
+
         return resultList.iterator();
-        
+
     }
-   
-    
+
     private double getEdgeWeight(int currentVertex, int neighbor) {
         if (indexIsValid(currentVertex) && indexIsValid(neighbor)) {
             return adjMatrix[currentVertex][neighbor];
@@ -265,7 +261,6 @@ public class Network<T> implements NetworkADT<T> {
             return 0;
         }
     }
-
 
     @Override
     public boolean isEmpty() {
@@ -301,7 +296,6 @@ public class Network<T> implements NetworkADT<T> {
         return -1;
     }
 
-    
     private void buscaProfundidade(int start, boolean[] visited) {
         visited[start] = true;
 
@@ -312,40 +306,38 @@ public class Network<T> implements NetworkADT<T> {
             }
         }
     }
-    
+
     @Override
     public int size() {
         return numVertices;
     }
 
-    
     @Override
     public double shortestPathWeight(T vertex1, T vertex2) {
-        
+
         int somatorio = 0;
         Iterator iterator = iteratorShortestPath(vertex1, vertex2);
-        
+
         while (iterator.hasNext()) {
             PriorityQueueNode<T> node = (PriorityQueueNode<T>) iterator.next();
             somatorio += node.getPriority();
         }
-        
+
         return somatorio;
-        
+
     }
 
     private boolean indexIsValid(int index) {
         return index >= 0 && index < numVertices;
     }
 
-
     @Override
-    public Iterator iteratorShortestPath(T startVertex, T targetVertex) {   
-        return iteratorShortestPath(getIndex(startVertex), getIndex(startVertex)); 
+    public Iterator iteratorShortestPath(T startVertex, T targetVertex) {
+        return iteratorShortestPath(getIndex(startVertex), getIndex(startVertex));
     }
-    
+
     public Iterator iteratorShortestPath(int startIndex, int targetIndex) {
-        
+
         int[] distances = new int[numVertices];
         int[] predecessors = new int[numVertices];
 
@@ -360,7 +352,7 @@ public class Network<T> implements NetworkADT<T> {
         }
 
         PriorityQueue<T> priorityQueue = new PriorityQueue<>();
-        for (int i = 0; i < numVertices; i++){
+        for (int i = 0; i < numVertices; i++) {
             priorityQueue.addElement(vertices[i], (int) distances[i]);
         }
 
@@ -382,7 +374,7 @@ public class Network<T> implements NetworkADT<T> {
 
                     try {
                         // Update priority in the priority queue
-                        ((PriorityQueue)priorityQueue).update(vertices[v], (int) distances[v]);
+                        ((PriorityQueue) priorityQueue).update(vertices[v], (int) distances[v]);
                     } catch (ElementNotFoundException ex) {
                         Logger.getLogger(Network.class.getName()).log(Level.SEVERE, null, ex);
                     } catch (EmptyCollectionException ex) {
@@ -392,9 +384,10 @@ public class Network<T> implements NetworkADT<T> {
             }
         }
         return priorityQueue.iteratorInOrder();
-        
-    }   
-     public boolean hasEdge(T vertex1, T vertex2) {
+
+    }
+
+    public boolean hasEdge(T vertex1, T vertex2) {
         int index1 = findIndex(vertex1);
         int index2 = findIndex(vertex2);
 
@@ -404,28 +397,27 @@ public class Network<T> implements NetworkADT<T> {
             throw new IllegalArgumentException("Vértices inválidos: " + vertex1 + ", " + vertex2);
         }
     }
-    
+
     public boolean isAdjacent(int vertex1, int vertex2) {
         if (getEdgeWeight(vertex1, vertex2) > 0) {
             return true;
         }
         return false;
     }
-   
-     
-    
+
     @Override
     public void addEdge(T vertex1, T vertex2, double weight) {
-        int index1 = findIndex(vertex1);
-        int index2 = findIndex(vertex2);
+       addEdge(findIndex(vertex1),findIndex(vertex2), weight);
+    }
 
+    protected void addEdge(int index1, int index2, double weight) {
         if (indexIsValid(index1) && indexIsValid(index2)) {
             adjMatrix[index1][index2] = weight;
             adjMatrix[index2][index1] = weight;
         } else {
-            throw new IllegalArgumentException("Vértices inválidos: " + vertex1 + ", " + vertex2);
+            throw new IllegalArgumentException("Vértices inválidos: ");
         }
+
     }
-    
 
 }

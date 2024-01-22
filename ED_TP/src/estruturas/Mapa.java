@@ -58,8 +58,8 @@ public class Mapa<T> extends Network<T>{
             for (int j = 0; j < numVertices; j++) {
                 if (isAdjacent(i, j)) {
                     JSONObject arestaJSON = new JSONObject();
-                    arestaJSON.put("LocalizacaoOrigem", vertices[i].toString());  
-                    arestaJSON.put("LocalizacaoDestino", vertices[j].toString());  
+                    arestaJSON.put("Origem", i);  
+                    arestaJSON.put("Destino", j);  
                     arestaJSON.put("Peso", adjMatrix[i][j]);
                     arestasJSON.add(arestaJSON);
                 }
@@ -75,9 +75,9 @@ public class Mapa<T> extends Network<T>{
         }
     }
     
-    public static Network importJSON(String filePath) {
+    public static Mapa<Localidade> importJSON(String filePath) {
         JSONParser jsonParser = new JSONParser();
-
+        
         try (FileReader reader = new FileReader(filePath)) {
             JSONObject jsonObject = null;
             try {
@@ -92,27 +92,29 @@ public class Mapa<T> extends Network<T>{
             JSONArray LocalidadesArray = (JSONArray) jsonObject.get("Localidades");
             for (int i = 0; i < LocalidadesArray.size(); i++) {
                 // Adicione seus vértices ao grafo, dependendo da estrutura do JSON
-                
-                JSONObject localidade = (JSONObject) jsonObject.get(i);
-                
+                JSONObject localidadeJson = (JSONObject) LocalidadesArray.get(i);
+                String nome = (String) localidadeJson.get("Nome");
+                Localidade localidade = new Localidade(nome);
+                mapa.addVertex(localidade);
             
             }
-            JSONArray arestas = (JSONArray) jsonObject.get("Arestas");
-
             
+            JSONArray arestasArray = (JSONArray) jsonObject.get("Arestas");
+             for (int i = 0; i < arestasArray.size(); i++) {
+                JSONObject aresta = (JSONObject) arestasArray.get(i);
+                int origem = (int) aresta.get("Origem");
+                int destino = (int) aresta.get("Destino");
+                double peso = (double) aresta.get("Peso");
 
-            for (Object arestaObj : arestas) {
-                JSONObject aresta = (JSONObject) arestaObj;
-                long origem = (Long) aresta.get("Origem");
-                long destino = (Long) aresta.get("Destino");
-                double peso = (Double) aresta.get("Peso");
-
+                
+                mapa.addEdge(origem, destino, peso);
             }
             
-            
+            return mapa;
         } catch (IOException e) {
             e.printStackTrace(); 
         }
+         return new Mapa<Localidade>();
     }
     
     public void showMapa() {

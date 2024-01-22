@@ -4,6 +4,9 @@
  */
 package elementos;
 
+import java.time.LocalDateTime;
+import org.json.simple.JSONObject;
+
 /**
  *
  * @author David Santos
@@ -68,6 +71,6 @@ public class Localidade {
         return this.id == other.id;
     }
     
-    
-    
+   
+ 
 }
