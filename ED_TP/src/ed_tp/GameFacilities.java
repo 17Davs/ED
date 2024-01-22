@@ -21,7 +21,7 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
     private int numVertices;
     private int numArestas;
     private int contador = 0;
-    private int opcao = 0;
+
     private String name;
     NetworkADT<Localidade> graph;
 
@@ -29,10 +29,10 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
         graph = new Network<>();
     }
 
-    
-    
     @Override
-    public  void criarMapa() {
+    public void criarMapa() {
+
+        int opcao = 0;
 
         int preenchimento = 0;
         int cont = 0;
@@ -75,10 +75,8 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
                         int i = random.nextInt(numVertices);
                         int j = random.nextInt(numVertices);
 
-                        if (!graph.hasEdge(tempLocalidade[i], tempLocalidade[j])) {
-                            graph.addEdge(tempLocalidade[i], tempLocalidade[j], peso);
-                            contador++;
-                        }
+                        graph.addEdge(tempLocalidade[i], tempLocalidade[j], peso);
+                        contador++;
 
                     }
                     break;
@@ -104,13 +102,11 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
                                         int i = random.nextInt(numVertices);
                                         int j = random.nextInt(numVertices);
 
-                                        if (!graph.hasEdge(tempLocalidade[i], tempLocalidade[j])) {
-                                            graph.addEdge(tempLocalidade[i], tempLocalidade[j], peso);
-                                            contador++;
-                                        }
+                                        graph.addEdge(tempLocalidade[i], tempLocalidade[j], peso);
+                                        contador++;
 
                                     }
-                                }while(graph.isConnected());
+                                } while (graph.isConnected());
                                 break;
                             case 2:
                                 while (contador < numArestas) {
@@ -124,11 +120,9 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
                                     int i = random.nextInt(numArestas - 1); //para linhas
                                     int j = random.nextInt(numArestas - 1); //para colunas
 
-                                    if (!graph.hasEdge(tempLocalidade[i], tempLocalidade[j])) {
-                                        graph.addEdge(tempLocalidade[i], tempLocalidade[j], peso);
-                                        graph.addEdge(tempLocalidade[j], tempLocalidade[i], peso);
-                                        contador++;
-                                    }
+                                    graph.addEdge(tempLocalidade[i], tempLocalidade[j], peso);
+                                    graph.addEdge(tempLocalidade[j], tempLocalidade[i], peso);
+                                    contador++;
 
                                 }
                                 break;
@@ -138,15 +132,42 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
 
             }
         } while (opcao != 1 || opcao != 2);
-
+        iniciarJogo();
     }
 
     void iniciarJogo() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
 
-    void importMapa() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        int opcao = 0;
+
+        System.out.println("  ======= Loading.... ======  ");
+        System.out.println("Capture the flag iniciado com sucesso!");
+
+        //introduzir numero de bots
+        do {
+            System.out.println();
+            System.out.println("======== Menu do Jogo ========");
+            System.out.println("     1. Padronizar Bots       ");//por retirar
+            System.out.println("    2. Visualizar o mapa      ");
+            System.out.println("    0. Sair do jogo           ");
+            System.out.println("==============================");
+
+            System.out.println("Introduza sua opcao: ");
+            opcao = scan.nextInt();
+
+            switch (opcao) {
+                case 1:
+                    break;
+                case 2:
+                    if (graph instanceof Network) {
+                        ((Network) graph).showMapa();
+                    } else {
+                        System.out.println("O objeto graph não é uma instância de Network.");
+                    }
+                    break;
+            }
+
+        } while (opcao != 0);
+
     }
 
 }
