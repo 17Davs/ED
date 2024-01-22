@@ -15,4 +15,8 @@ public class Bot {
     protected Iterator<Localidade> itr;
     protected StackADT<Localidade> stack;
     
+    public void setIterator(Iterator<Localidade> iterator) {
+        this.itr = iterator;
+    }
+    
 }
