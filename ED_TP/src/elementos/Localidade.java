@@ -12,14 +12,15 @@ import org.json.simple.JSONObject;
  * @author David Santos
  */
 public class Localidade {
+
     private int id;
-    private static int proximoID=0;
+    private static int proximoID = 0;
     private String nome;
     private boolean ocupada;
     private Flag flag;
 
     public Localidade(String nome) {
-        this.flag=null;
+        this.flag = null;
         this.id = ++proximoID;
         this.nome = nome;
         this.ocupada = false;
@@ -29,16 +30,22 @@ public class Localidade {
         return id;
     }
 
-    public void setFlag(Flag flag) {
+    /**
+     * Método para adicionar uma flag em uma localidade
+     * @param flag a flag a adicionar
+     * @throws UnsupportedOperationException se já existe uma flag na localidade
+     */
+    public void setFlag(Flag flag) throws UnsupportedOperationException {
+        if (this.flag != null) {
+            throw new UnsupportedOperationException("Já existe uma flag nesta Localização");
+        }
         this.flag = flag;
     }
-    
+
     public Flag getFlag() {
         return flag;
     }
-    
-    
-    
+
     public String getNome() {
         return nome;
     }
@@ -55,7 +62,6 @@ public class Localidade {
         this.ocupada = ocupada;
     }
 
-
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -70,7 +76,5 @@ public class Localidade {
         final Localidade other = (Localidade) obj;
         return this.id == other.id;
     }
-    
-   
- 
+
 }
