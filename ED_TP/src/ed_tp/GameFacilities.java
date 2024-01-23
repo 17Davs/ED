@@ -9,14 +9,18 @@ import elementos.Flag;
 import elementos.Jogador;
 import elementos.Localidade;
 import estruturas.EmptyCollectionException;
+import estruturas.LinkedQueue;
 
 import estruturas.Mapa;
 import interfacesADT.QueueADT;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 /**
  *
@@ -30,6 +34,7 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
     private int numArestas = 0;
     private Jogador jogadorAtual;
     private QueueADT<Jogador> jogadores;
+    public String nomeMapa;
 
     private static final String currentWorkingDir = System.getProperty("user.dir");
 
@@ -41,8 +46,15 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
     }
 
     public void criarFlags(Jogador jogador) {
+
         // Array de localidedes 
-        Localidade[] localidades = graph.getVertexes();
+        Object[] vertices = graph.getVertexes();
+
+        // Converte o array de objetos para um array de Localidade manualmente
+        Localidade[] localidades = new Localidade[vertices.length];
+        for (int i = 0; i < vertices.length; i++) {
+            localidades[i] = (Localidade) vertices[i];
+        }
 
         System.out.println("======== Definir Base ========");
         System.out.println("Escolha uma base entre as seguintes localidades:");
@@ -62,7 +74,7 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
                 base = localidades[opcao - 1];
 
                 // Check if the selected base already has a flag
-                if (base.getFlag() != null) {
+                if (base.getFlag() == null) {
                     System.out.println("Base selecionada: " + base.getNome());
                     Flag flag = new Flag(jogador);
                     base.setFlag(flag);
@@ -141,6 +153,7 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
                 case 2:
 
                     do {
+                        System.out.println();
                         System.out.println("========  Tipo de Aresta  ========");
                         System.out.println("      1. Mesmo peso nas arestas   ");
                         System.out.println("   2. Pesos diferente nas arestas ");
@@ -192,6 +205,7 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
         } while (opcao != 1 && opcao != 2);
         int opcao2 = 0;
         do {
+            System.out.println();
             System.out.println("============  Export  ============");
             System.out.println("     1. Exportar o mapa e jogar   ");
             System.out.println("2. Apenas jogar sem guardar o mapa");
@@ -205,6 +219,7 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
                     System.out.print("Indica o nome do mapa: ");
                     String nomeMapa = scan.next();
                     graph.exportToJSON(currentWorkingDir + "/src/Files/" + nomeMapa + ".json");
+                    System.out.println();
                     iniciarJogo();
                     break;
                 case 2:
@@ -215,16 +230,11 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
 
     }
 
-    void iniciarJogo() {
-
+    void padronizarBots() {
         int opcao = 0;
         int numBots = 0;
         int numIterators = 3;
 
-        System.out.println("  ======= Loading.... ======  ");
-        System.out.println("Capture the flag iniciado com sucesso!");
-
-        //introduzir numero de bots
         do {
             System.out.print("Introduza o numero de bots para cada jogador: ");
             numBots = scan.nextInt();
@@ -234,31 +244,29 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
         Jogador jogador2 = new Jogador(numBots);
 
         for (int i = 1; i <= numBots; i++) {
-            Bot bot = new Bot(); // Substitua "Bot" pelo tipo correto da sua classe Bot
+            Bot bot = new Bot();
             jogador1.adicionarBot(bot);
         }
 
-// Adicionar bots ao jogador2
         for (int i = 1; i <= numBots; i++) {
-            Bot bot = new Bot(); // Substitua "Bot" pelo tipo correto da sua classe Bot
+            Bot bot = new Bot();
             jogador2.adicionarBot(bot);
         }
 
-        System.out.println("\n\n");
+        System.out.println();
         System.out.println("Flag jogador 1");
         criarFlags(jogador1);
-        System.out.println("\n\n");
+        System.out.println();
         System.out.println("Flag jogador 2");
         criarFlags(jogador2);
 
-        if (numBots > numIterators) {
+        if (numBots < numIterators) {
             //random
         } else {
+            System.out.println();
             System.out.println("Padronização de bots para o jogador 1");
             for (int b = 1; b <= numBots;) {
                 System.out.println("Bot numero " + b + " para o jogador 1");
-
-                System.out.println();
                 System.out.println("======== Iterador para o bot " + b + " ========");
                 System.out.println("      1. Travessia por largura (BFS)       ");
                 System.out.println("    2. Travessia por profundidade (DFS)    ");
@@ -389,23 +397,31 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
             }
 
         }
+    }
+
+    void iniciarJogo() {
+
+        int opcao = 0;
+        System.out.println("  ======= Loading.... ======  ");
+        System.out.println("Capture the flag iniciado com sucesso!");
+
         do {
             System.out.println();
-            System.out.println("======== Menu do Jogo ========");
-            System.out.println("     1. Padronizar Bots       ");//por retirar
-            System.out.println("    2. Visualizar o mapa      ");
-            System.out.println("    0. Sair do jogo           ");
-            System.out.println("==============================");
+            System.out.println("============ Menu do Jogo =============");
+            System.out.println("      1. Padronizar Bots e Jogar       ");//por retirar
+            System.out.println("         2. Visualizar o mapa          ");
+            System.out.println("           0. Sair do jogo             ");
+            System.out.println("=======================================");
 
             System.out.println("Introduza sua opcao: ");
             opcao = scan.nextInt();
 
             switch (opcao) {
                 case 1:
+                    padronizarBots();
                     break;
                 case 2:
-
-                    graph.showMapa();
+                    graph.showMapaFromJSON(currentWorkingDir + "/src/Files/" + nomeMapa + ".json");
 
                     break;
             }
@@ -420,30 +436,90 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
         boolean exit =true;
         int numJogadas=0;
         
-        while (!exit){
-            //cada jogada
-            while(!jogadores.isEmpty()){
-                jogadorAtual = jogadores.dequeue();
-                //fazer dequeue do proximo bot
-                Bot bot = jogadorAtual.getNextBot();
-                
-                Iterator<Localidade> itr = bot.getItr();
-                if (itr.hasNext()){
-                    Localidade local = itr.next();
-                    if(local.isOcupada() && local.getFlag()!=null){
-                        //logica se estiver ocupada
-                        
-                    } else if(local.isOcupada() && local.getFlag()==null){
-                        //não pode ir para ali
-                        //opcao esperar, 
-                    }
-                }
-                
-                
-                jogadores.enqueue(jogadorAtual);
-            }
-        }
+//        while (!exit){
+//            //cada jogada
+//            while(!jogadores.isEmpty()){
+//                jogadorAtual = jogadores.dequeue();
+//                //fazer dequeue do proximo bot
+//               // Bot bot = jogadorAtual.getNextBot();
+//                
+//                Iterator<Localidade> itr = bot.getItr();
+//                if (itr.hasNext()){
+//                    Localidade local = itr.next();
+//                    if(local.isOcupada() && local.getFlag()!=null){
+//                        //logica se estiver ocupada
+//                        
+//                    } else if(local.isOcupada() && local.getFlag()==null){
+//                        //não pode ir para ali
+//                        //opcao esperar, 
+//                    }
+//                }
+//                
+//                
+//                jogadores.enqueue(jogadorAtual);
+//            }
+//        }
         
+    }
+
+    void whoPlays(Jogador jogador1, Jogador jogador2) {
+
+        int randomNum = random.nextInt(jogador2.getId() - jogador1.getId()) + jogador1.getId();
+
+        if (randomNum == 1) {
+            System.out.println("Jogador 1 irá jogar primeiro");
+            jogadores.enqueue(jogador1);
+            jogadores.enqueue(jogador2);
+        } else {
+            System.out.println("Jogador 2 irá jogar primeiro");
+            jogadores.enqueue(jogador2);
+            jogadores.enqueue(jogador1);
+        }
+
+    }
+
+    public static void main(String[] args) {
+
+        Scanner scan = new Scanner(System.in);
+        int opcao = 0;
+        GameFacilities game = new GameFacilities<>();
+        Mapa map = new Mapa<>();
+        String currentWorkingDir = System.getProperty("user.dir");
+        String nMapa;
+
+        do {
+            System.out.println();
+            System.out.println("======== Capture the flag ========");
+            System.out.println("    1. Criaçao de um novo mapa    ");
+            System.out.println("     2. Importação de um mapa     ");
+            System.out.println("         0. Sair do jogo          ");
+            System.out.println("==================================");
+
+            System.out.print("Introduza sua opcao por favor:");
+            opcao = scan.nextInt();
+
+            switch (opcao) {
+                case 1:
+                    System.out.println("Criação de um mapa novo!");
+                    game.criarMapa();
+                    game.iniciarJogo();
+                    break;
+                case 2:
+                    System.out.println("Importação de um mapa!");
+                    System.out.print("Introduza o nome do mapa:");
+                    nMapa = scan.next();
+                    game.nomeMapa = nMapa;
+                    game.graph= Mapa.importJSON(currentWorkingDir + "/src/Files/" + nMapa + ".json");
+                    game.iniciarJogo();
+                    break;
+                case 0:
+                    System.out.println("Fechando o jogo!");
+                    break;
+                default:
+                    System.out.print("Opção inválida introduza novamente a sua opção:");
+                    break;
+            }
+        } while (opcao != 0);
     }
 
 }

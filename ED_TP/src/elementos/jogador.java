@@ -6,7 +6,9 @@ package elementos;
 
 import estruturas.ArrayUnorderedList;
 import estruturas.EmptyCollectionException;
+import estruturas.LinkedQueue;
 import interfacesADT.ListADT;
+import interfacesADT.QueueADT;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
@@ -21,13 +23,13 @@ public class Jogador {
 
     private int id;
     private static int proximoID = 0;
-    private ArrayUnorderedList<Bot> bots;
+    private LinkedQueue<Bot> bots;  
     private Localidade base;
     Scanner scan = new Scanner(System.in);
 
     public Jogador(int quantidadeBots) {
         this.id = ++proximoID;
-        this.bots = new ArrayUnorderedList<>(quantidadeBots);
+        this.bots = new LinkedQueue<>();
         this.base = null;
     }
 
@@ -44,10 +46,11 @@ public class Jogador {
         this.base = base;
     }
 
-    public ListADT<Bot> getBots() {
+    public LinkedQueue<Bot> getBots() {
         return bots;
     }
 
+    
     public void iteratorToBot(int indiceBot, int numBots, Iterator<Localidade> iterator) throws EmptyCollectionException {
 
         if (!bots.isEmpty() && indiceBot >= 0 && indiceBot < numBots) {
@@ -111,5 +114,7 @@ public class Jogador {
     public void adicionarBot(Bot bot) {
         bots.addToRear(bot);
     }
+    
+    
     
 }

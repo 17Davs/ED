@@ -336,12 +336,12 @@ public class Network<T> implements NetworkADT<T> {
 
     public Iterator iteratorShortestPath(int startIndex, int targetIndex) {
 
-        if (startIndex < 0 || startIndex >= numVertices || targetIndex < 0 || targetIndex >= numVertices) {
+        if (!indexIsValid(startIndex) || !indexIsValid(targetIndex)) {
             throw new IllegalArgumentException("Invalid indices");
         }
 
         int[] distances = new int[numVertices];
-        int[] predecessors = new int[numVertices];
+        int[] precessors = new int[numVertices];
 
         // Initialize distances and predecessors
         for (int i = 0; i < numVertices; i++) {
@@ -350,7 +350,7 @@ public class Network<T> implements NetworkADT<T> {
             } else {
                 distances[i] = Integer.MAX_VALUE;
             }
-            predecessors[i] = -1;
+            precessors[i] = -1;
         }
 
         PriorityQueue<T> priorityQueue = new PriorityQueue<>();
@@ -364,7 +364,7 @@ public class Network<T> implements NetworkADT<T> {
             try {
                 minNode = priorityQueue.removeMin();
             } catch (EmptyCollectionException ex) {
-              
+
             }
             int u = getIndex(minNode.getElement());
 
@@ -372,7 +372,7 @@ public class Network<T> implements NetworkADT<T> {
             for (int v = 0; v < numVertices; v++) {
                 if (isAdjacent(u, v) && distances[u] + getEdgeWeight(u, v) < distances[v]) {
                     distances[v] = (int) (distances[u] + getEdgeWeight(u, v));
-                    predecessors[v] = u;
+                    precessors[v] = u;
 
                     try {
                         // Update priority in the priority queue
@@ -385,8 +385,13 @@ public class Network<T> implements NetworkADT<T> {
                 }
             }
         }
-        return priorityQueue.iteratorLevelOrder();
-
+        ArrayUnorderedList<T> path = new ArrayUnorderedList<>(numVertices);
+        int currentVertex = targetIndex;
+        while (currentVertex != -1) {
+            path.addToFront(vertices[currentVertex]);
+            currentVertex = precessors[currentVertex];
+        }
+        return path.iterator();
     }
 
     public boolean hasEdge(T vertex1, T vertex2) {
