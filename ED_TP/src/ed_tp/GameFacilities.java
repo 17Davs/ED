@@ -26,20 +26,41 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
 
     Scanner scan = new Scanner(System.in);
     Random random = new Random();
+    
+    /*
+    Variavel que armazena o numero de vertices no grafo
+    */
     private int numVertices;
+    
+    /*
+    Variavel que armazena o numero de arestas no grafo
+    */
     private int numArestas;
+    
+    /*
+    Variavel que armazena o numero de bots
+    */
     private int numBots;
+    
+    /*
+    Variavel que armazena o jogador que esta a jogar
+    */
     private Jogador jogadorAtual;
+    
+    /*
+    Queue que armazena os jogadores
+    */
     private QueueADT<Jogador> jogadores;
+    
+    /*
+    Variavel que armazena o nome do mapa
+    */
     public String nomeMapa;
 
     private static final String currentWorkingDir = System.getProperty("user.dir");
     Mapa<Localidade> graph;
 
-//    public GameFacilities() {
-//        
-//        graph = new Mapa<>();
-//    }
+
     public GameFacilities() {
         this.numVertices = 0;
         this.numArestas = 0;
