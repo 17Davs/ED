@@ -14,9 +14,29 @@ import java.util.Iterator;
 public class Bot {
     protected Iterator<Localidade> itr;
     protected StackADT<Localidade> stack;
+    protected Localidade local;
     
     public void setIterator(Iterator<Localidade> iterator) {
         this.itr = iterator;
     }
+
+    public Bot(Iterator<Localidade> itr, StackADT<Localidade> stack) {
+        this.itr = itr;
+        this.stack = stack;
+    }
+
+    public Iterator<Localidade> getItr() {
+        return itr;
+    }
+
+    public StackADT<Localidade> getStack() {
+        return stack;
+    }
+
+    public Bot() {
+        
+    }
+    
+    
     
 }

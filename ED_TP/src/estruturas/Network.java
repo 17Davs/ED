@@ -364,7 +364,7 @@ public class Network<T> implements NetworkADT<T> {
             try {
                 minNode = priorityQueue.removeMin();
             } catch (EmptyCollectionException ex) {
-                Logger.getLogger(Network.class.getName()).log(Level.SEVERE, null, ex);
+              
             }
             int u = getIndex(minNode.getElement());
 
@@ -385,7 +385,7 @@ public class Network<T> implements NetworkADT<T> {
                 }
             }
         }
-        return priorityQueue.iteratorInOrder();
+        return priorityQueue.iteratorLevelOrder();
 
     }
 
