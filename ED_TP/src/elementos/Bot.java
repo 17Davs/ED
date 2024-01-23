@@ -4,6 +4,7 @@
  */
 package elementos;
 
+import estruturas.LinkedStack;
 import interfacesADT.StackADT;
 import java.util.Iterator;
 
@@ -12,17 +13,25 @@ import java.util.Iterator;
  * @author David Santos
  */
 public class Bot {
-    protected Iterator<Localidade> itr;
-    protected StackADT<Localidade> stack;
-    protected Localidade local;
+
+    private Iterator<Localidade> itr;
+    private LinkedStack<Localidade> stack;
+
     private int id;
     private static int proximoID = 0;
-    
+
+    public Bot() {
+        id = ++proximoID;
+        this.itr = null;
+        this.stack = new LinkedStack<>();
+
+    }
+
     public void setIterator(Iterator<Localidade> iterator) {
         this.itr = iterator;
     }
 
-    public Bot(Iterator<Localidade> itr, StackADT<Localidade> stack) {
+    public Bot(Iterator<Localidade> itr, LinkedStack<Localidade> stack) {
         this.itr = itr;
         this.stack = stack;
     }
@@ -31,19 +40,12 @@ public class Bot {
         return itr;
     }
 
-    public StackADT<Localidade> getStack() {
+    public LinkedStack<Localidade> getStack() {
         return stack;
-    }
-
-    public Bot() {
-        id = ++proximoID;
     }
 
     public int getId() {
         return id;
     }
-    
-    
-    
-    
+
 }

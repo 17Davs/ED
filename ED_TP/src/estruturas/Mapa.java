@@ -107,7 +107,7 @@ public class Mapa<T> extends Network<T> {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return new Mapa<Localidade>();
+        return new Mapa<>();
     }
 
     public void showMapaFromJSON(String filePath) {

@@ -10,6 +10,7 @@ import elementos.Jogador;
 import elementos.Localidade;
 import estruturas.EmptyCollectionException;
 import estruturas.LinkedQueue;
+import estruturas.LinkedStack;
 
 import estruturas.Mapa;
 import interfacesADT.QueueADT;
@@ -31,18 +32,25 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
     Scanner scan = new Scanner(System.in);
     Random random = new Random();
     private int numVertices;
-    private int numArestas = 0;
+    private int numArestas;
+    private int numBots;
     private Jogador jogadorAtual;
     private QueueADT<Jogador> jogadores;
     public String nomeMapa;
 
     private static final String currentWorkingDir = System.getProperty("user.dir");
-
-    private String name;
     Mapa<Localidade> graph;
 
+//    public GameFacilities() {
+//        
+//        graph = new Mapa<>();
+//    }
     public GameFacilities() {
-        graph = new Mapa<>();
+        this.numVertices = 0;
+        this.numArestas = 0;
+        this.jogadorAtual = null;
+        this.jogadores = new LinkedQueue<>();
+        this.graph = new Mapa<>();
     }
 
     public void criarFlags(Jogador jogador) {
@@ -97,7 +105,7 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
     public void criarMapa() {
 
         int opcao = 0;
-
+        String name;
         int preenchimento = 0;
         int cont = 0;
 
@@ -106,6 +114,7 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
             numVertices = scan.nextInt();
         } while (numVertices < 10);
 
+        graph = new Mapa<>(numVertices);
         Localidade[] tempLocalidade = new Localidade[numVertices];
 
         while (cont < numVertices) {
@@ -212,10 +221,10 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
                     String nomeMapa = scan.next();
                     graph.exportToJSON(currentWorkingDir + "/src/Files/" + nomeMapa + ".json");
                     System.out.println();
-                    iniciarJogo();
+
                     break;
                 case 2:
-                    iniciarJogo();
+
                     break;
             }
         } while (opcao2 != 1 && opcao2 != 2);
@@ -224,16 +233,15 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
 
     void padronizarBots() throws EmptyCollectionException {
         int opcao = 0;
-        int numBots = 0;
         int numIterators = 3;
         Bot bot = null;
         do {
-            System.out.print("Introduza o numero de bots para cada jogador: ");
+            System.out.print("Introduza o numero de bots para cada jogador [Valor menor do que 20% das localidade]: ");
             numBots = scan.nextInt();
-        } while (numBots < numVertices * 0.30);
+        } while (numBots > graph.size() * 0.20);
 
-        Jogador jogador1 = new Jogador(numBots);
-        Jogador jogador2 = new Jogador(numBots);
+        Jogador jogador1 = new Jogador();
+        Jogador jogador2 = new Jogador();
 
         //garantir estar vazio
         while (!jogadores.isEmpty()) {
@@ -251,23 +259,28 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
         criarFlags(jogador2);
 
         if (numBots < numIterators) {
-            //random
-        } else {
+            //deixar jogador escolher
             for (int vezes = 0; vezes < jogadores.size(); vezes++) {
                 jogadorAtual = jogadores.dequeue();
                 System.out.println();
                 System.out.println("Padronização de bots para o jogador " + jogadorAtual.getId());
                 for (int b = 1; b <= numBots;) {
                     bot = new Bot();
-                    System.out.println("Bot numero " + bot.getId() + " para o jogador 1");
-                    System.out.println("======== Iterador para o bot " + bot.getId() + " ========");
-                    System.out.println("      1. Travessia por largura (BFS)       ");
-                    System.out.println("    2. Travessia por profundidade (DFS)    ");
-                    System.out.println("            3. Shortest Path               ");
-                    System.out.println("===========================================");
+                    do {
+                        System.out.println("Bot numero " + bot.getId() + " para o jogador 1");
+                        System.out.println("======= Estrátegia para o bot " + bot.getId() + " =======");
+                        System.out.println("      1. Travessia por largura (BFS)       ");
+                        System.out.println("    2. Travessia por profundidade (DFS)    ");
+                        System.out.println("            3. Shortest Path               ");
+                        System.out.println("===========================================");
 
-                    System.out.println("Introduza sua opcao: ");
-                    opcao = scan.nextInt();
+                        System.out.println("Introduza sua opcao: ");
+                        opcao = scan.nextInt();
+
+                        if (opcao != 1 && opcao != 2 && opcao != 3) {
+                            System.out.println(" Opcão Inválida ");
+                        }
+                    } while (opcao != 1 && opcao != 2 && opcao != 3);
 
                     Localidade startVertex = jogadorAtual.getBase();
                     switch (opcao) {
@@ -341,7 +354,87 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
                 jogadores.enqueue(jogadorAtual);
             }
 
+        } else {
+            for (int vezes = 0; vezes < jogadores.size(); vezes++) {
+                jogadorAtual = jogadores.dequeue();
+                System.out.println();
+                System.out.println("Padronização de bots para o jogador " + jogadorAtual.getId());
+                System.out.println("Padronização será feita de forma dinâmica garantindo o uso de todas as estratégias");
+                do {
+                    System.out.println("========  Estrátegia para o bots   ========");
+                    System.out.println("      1. Travessia por largura (BFS)       ");
+                    System.out.println("    2. Travessia por profundidade (DFS)    ");
+                    System.out.println("            3. Shortest Path               ");
+                    System.out.println("===========================================");
+
+                    System.out.println("Qual deseja priorizar: ");
+                    opcao = scan.nextInt();
+
+                    if (opcao != 1 && opcao != 2 && opcao != 3) {
+                        System.out.println(" Opcão Inválida ");
+                    }
+                } while (opcao != 1 && opcao != 2 && opcao != 3);
+
+                Localidade startVertex = jogadorAtual.getBase();
+                Localidade targetVertex = null;
+                if (jogadorAtual.equals(jogador1)) {
+                    targetVertex = jogador2.getBase();
+                } else {
+                    targetVertex = jogador1.getBase();
+                }
+
+                Iterator<Localidade> bfsIterator = graph.iteratorBFS(startVertex);
+                Iterator<Localidade> dfsIterator = graph.iteratorDFS(startVertex);
+                Iterator<Localidade> shortestPathIterator = graph.iteratorShortestPath(startVertex, targetVertex);
+                LinkedQueue<Iterator<Localidade>> iteradoeres = new LinkedQueue<>();
+
+                switch (opcao) {
+                    case 1:
+                        System.out.println("Foi escolhido a travessia BFS como prioritária");
+                        iteradoeres.enqueue(bfsIterator);
+                        iteradoeres.enqueue(shortestPathIterator);
+                        iteradoeres.enqueue(dfsIterator);
+
+                        // Imprimir a ordem de prioridade
+                        System.out.println("A ordem de prioridade é: BFS, Shortest Path, DFS");
+                        break;
+
+                    case 2:
+                        System.out.println("Foi escolhido a travessia DFS como prioritária");
+                        iteradoeres.enqueue(dfsIterator);
+                        iteradoeres.enqueue(shortestPathIterator);
+                        iteradoeres.enqueue(bfsIterator);
+
+                        // Imprimir a ordem de prioridade
+                        System.out.println("A ordem de prioridade é: DFS, Shortest Path, BFS");
+                        break;
+
+                    case 3:
+                        System.out.println("Foi escolhido a travessia Shortest Path como prioritária");
+                        iteradoeres.enqueue(shortestPathIterator);
+                        iteradoeres.enqueue(bfsIterator);
+                        iteradoeres.enqueue(dfsIterator);
+
+                        // Imprimir a ordem de prioridade
+                        System.out.println("A ordem de prioridade é: Shortest Path, BFS, DFS");
+                        break;
+                }
+
+                //criação dos bots
+                for (int i = 0; i < numBots; i++) {
+                    Iterator<Localidade> iterador = iteradoeres.dequeue();
+                    bot = new Bot();
+                    jogadorAtual.iteratorToBot(bot, iterador);
+                    System.out.println("Iterador configurado para o Bot " + bot.getId());
+                    iteradoeres.enqueue(iterador);
+
+                }
+                //meter na fila novamente
+                jogadores.enqueue(jogadorAtual);
+            }
+
         }
+        oJogo();
     }
 
     void iniciarJogo() {
@@ -362,15 +455,12 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
             opcao = scan.nextInt();
 
             switch (opcao) {
-                case 1:
-                {
+                case 1: 
                     try {
-                        padronizarBots();
-                    } catch (EmptyCollectionException ex) {
-                        Logger.getLogger(GameFacilities.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+                    padronizarBots();
+                } catch (EmptyCollectionException ex) {
                 }
-                    break;
+                break;
 
                 case 2:
                     graph.showMapaFromJSON(currentWorkingDir + "/src/Files/" + nomeMapa + ".json");
@@ -383,37 +473,100 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
     }
 
     public void oJogo() throws EmptyCollectionException {
-        boolean exit = true;
+        System.out.println("\n\n");
+        System.out.println("======================================");
+        System.out.println("=========== Início do Jogo ===========");
+        System.out.println("======================================");
+
+        boolean exit = false, vitoriaProvisoria = false;
         int numJogadas = 0;
-        
+
         //fazer aleatorio
-        if (jogadores.size()==2) {
+        if (jogadores.size() == 2) {
             whoPlays(jogadores.dequeue(), jogadores.dequeue());
         }
 
-        while (!exit) {
-            //cada jogada
-            while (!jogadores.isEmpty()) {
-                jogadorAtual = jogadores.dequeue();
-                //fazer dequeue do proximo bot
-                Bot bot = jogadorAtual.getNextBot();
+        //cada jogada
+        while (!exit && !jogadores.isEmpty()) {
 
-                Iterator<Localidade> itr = bot.getItr();
+            jogadorAtual = jogadores.dequeue();
+            numJogadas++;
+            //fazer dequeue do proximo bot
+            Bot bot = jogadorAtual.getNextBot();
+
+            Iterator<Localidade> itr = bot.getItr();
+            LinkedStack<Localidade> stack = bot.getStack();
+            Localidade local = null;
+
+            //se tiver algo na stack significa que devemos tentar ir para essa localidade
+            if (!stack.isEmpty()) {
+                local = stack.pop();
+            } else {
+
                 if (itr.hasNext()) {
-                    Localidade local = itr.next();
-                    if (local.isOcupada() && local.getFlag() != null) {
-                        //logica se estiver ocupada
+                    local = itr.next();
 
-                     } else if (local.isOcupada() && local.getFlag() == null) {
-                        //não pode ir para ali
-                        //opcao esperar, 
+                    //se for a base (startVertex)
+                    if (local.equals(jogadorAtual.getBase())) {
+                        //fazer next mais uma vez para sair da base
+                        if (itr.hasNext()) {
+                            local = itr.next();
+                        }
+
                     }
+                }
+            }
+            //se estiver ocupada
+            if (local.isOcupada() && local.getFlag() == null) {
+                //não pode mover para ali
+                stack.push(local);
+                System.out.println("***Jogador " + jogadorAtual.getId() + ": Bot " + bot.getId() + " tentou mover para a localidade " + local.getNome() + ", mas está ocupada.");
+                System.out.println("Aguarde na próxima rodada para tentar novamente.");
+
+                //caso seja shortestPath
+            } else {
+                System.out.println("** Jogador " + jogadorAtual.getId() + ": Bot " + bot.getId() + " moveu para a localidade " + local.getNome());
+                //se é a flag do jogador oponente
+                if (local.getFlag() != null) {
+                    //se todos os jogadores tiveram o mesmo numero de jogadas, o jogo termina
+                    if (numJogadas % 2 == 0) {
+                        //se ainda não foi capturado nenhuma flag
+                        if (!vitoriaProvisoria) {
+                            System.out.println("\n=============== Vitória do Jogador " + jogadorAtual.getId() + " ===============");
+                            System.out.println("****** Bot " + bot.getId() + " capturou a bandereira inimiga em " + local.getNome() + " ******\n");
+                            exit = true;
+                        } else {
+                            System.out.println("****** Bot " + bot.getId() + " capturou a bandereira inimiga em " + local.getNome() + " ******\n");
+                            System.out.println("\n ===============    Empate entre os jogadores   ===============");
+
+                            exit = true;
+                        }
+
+                    } else {
+                        //se é o primeiro jogador a jogar
+                        vitoriaProvisoria = true;
+                        System.out.println("\n ========== Vitória Provisória do Jogador " + jogadorAtual.getId() + " ==========");
+                        System.out.println("Bot " + bot.getId() + " capturou a bandereira inimiga em " + local.getNome());
+                        System.out.println("\n\n === Esperar o outro jogador jogar para terminar a ronda === ");
+
+                    }
+                } else if (vitoriaProvisoria) {
+                    //pegar info do jogador que tinha vitoria provisória
+                    jogadorAtual = jogadores.dequeue();
+                    System.out.println("\n\n =============== Vitória do Jogador " + jogadorAtual.getId() + " ===============");
+                    //meter novamente na fila (caso seja preciso continuar a ordem mesmo apos a vitoria)
+                    jogadores.enqueue(jogadorAtual);
+                    exit = true;
                 }
 
                 jogadores.enqueue(jogadorAtual);
             }
-        }
 
+        }
+        System.out.println("\n\n");
+        System.out.println("======================================");
+        System.out.println("===========   Fim do Jogo  ===========");
+        System.out.println("======================================");
     }
 
     void whoPlays(Jogador jogador1, Jogador jogador2) {
@@ -421,11 +574,11 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
         int randomNum = random.nextInt(jogador2.getId() - jogador1.getId()) + jogador1.getId();
 
         if (randomNum == 1) {
-            System.out.println("Jogador 1 irá jogar primeiro");
+            System.out.println("******  Jogador 1 irá jogar primeiro  ******");
             jogadores.enqueue(jogador1);
             jogadores.enqueue(jogador2);
         } else {
-            System.out.println("Jogador 2 irá jogar primeiro");
+            System.out.println("******  Jogador 2 irá jogar primeiro  ******");
             jogadores.enqueue(jogador2);
             jogadores.enqueue(jogador1);
         }
@@ -437,8 +590,6 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
         Scanner scan = new Scanner(System.in);
         int opcao = 0;
         GameFacilities game = new GameFacilities<>();
-        Mapa map = new Mapa<>();
-        String currentWorkingDir = System.getProperty("user.dir");
         String nMapa;
 
         do {
@@ -464,7 +615,6 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
                     nMapa = scan.next();
                     game.nomeMapa = nMapa;
                     game.graph = Mapa.importJSON(currentWorkingDir + "/src/Files/" + nMapa + ".json");
-
                     game.iniciarJogo();
                     break;
                 case 0:

@@ -27,7 +27,7 @@ public class Jogador {
     private Localidade base;
     Scanner scan = new Scanner(System.in);
 
-    public Jogador(int quantidadeBots) {
+    public Jogador() {
         this.id = ++proximoID;
         this.bots = new LinkedQueue<>();
         this.base = null;
@@ -55,11 +55,9 @@ public class Jogador {
     }
     
     public void iteratorToBot(Bot bot,Iterator<Localidade> iterator) throws EmptyCollectionException {
-
             bot.setIterator(iterator);
             bots.enqueue(bot);
-            
-        
+ 
     }
 
 
