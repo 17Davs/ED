@@ -111,8 +111,9 @@ public class Jogador {
         }
     }
 
+    
     public void adicionarBot(Bot bot) {
-        bots.addToRear(bot);
+        bots.enqueue(bot);
     }
     
     

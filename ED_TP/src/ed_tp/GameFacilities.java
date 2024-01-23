@@ -73,14 +73,13 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
             if (opcao >= 1 && opcao <= localidades.length) {
                 base = localidades[opcao - 1];
 
-                // Check if the selected base already has a flag
                 if (base.getFlag() == null) {
                     System.out.println("Base selecionada: " + base.getNome());
                     Flag flag = new Flag(jogador);
                     base.setFlag(flag);
                 } else {
                     System.out.println("Erro: A base já possui uma flag. Escolha outra base.");
-                    base = null; // Reset base to null to continue the loop
+                    base = null;
                 }
             } else {
                 System.out.println("Opção inválida. Tente novamente.");
@@ -166,35 +165,28 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
                             case 1:
 
                                 //certificar se fica bem dentro do ciclo isConnected()
-                                do {
-                                    while (contador < numArestas) {
+                                while (contador < numArestas) {
 
-                                        int peso = 1 + (15 - 1) * random.nextInt();
-                                        int i = random.nextInt(numVertices);
-                                        int j = random.nextInt(numVertices);
+                                    int peso = 1 + (15 - 1) * random.nextInt();
+                                    int i = random.nextInt(numVertices);
+                                    int j = random.nextInt(numVertices);
 
-                                        graph.addEdge(tempLocalidade[i], tempLocalidade[j], peso);
-                                        contador++;
+                                    graph.addEdge(tempLocalidade[i], tempLocalidade[j], peso);
+                                    contador++;
 
-                                    }
-                                } while (graph.isConnected());
+                                }
                                 break;
                             case 2:
                                 while (contador < numArestas) {
-
-                                    int peso = 0;
-                                    peso = 1 + (15 - 1) * random.nextInt();
-
-                                    int peso2 = 0;
-                                    peso2 = 1 + (15 - 1) * random.nextInt();
-
-                                    int i = random.nextInt(numArestas - 1); //para linhas
-                                    int j = random.nextInt(numArestas - 1); //para colunas
+                                    int peso = 1 + random.nextInt(15);
+                                    int peso2 = 1 + random.nextInt(15);
+                                    int i = random.nextInt(numVertices);
+                                    int j = random.nextInt(numVertices);
 
                                     graph.addEdge(tempLocalidade[i], tempLocalidade[j], peso);
-                                    graph.addEdge(tempLocalidade[j], tempLocalidade[i], peso);
-                                    contador++;
+                                    graph.addEdge(tempLocalidade[j], tempLocalidade[i], peso2);
 
+                                    contador++;
                                 }
                                 break;
                         }
@@ -510,6 +502,7 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
                     nMapa = scan.next();
                     game.nomeMapa = nMapa;
                     game.graph= Mapa.importJSON(currentWorkingDir + "/src/Files/" + nMapa + ".json");
+
                     game.iniciarJogo();
                     break;
                 case 0:
