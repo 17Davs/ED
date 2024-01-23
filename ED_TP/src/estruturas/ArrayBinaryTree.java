@@ -33,6 +33,11 @@ public class ArrayBinaryTree<T> implements BinaryTreeADT<T> {
     public T getRoot() {
         return tree[0];
     }
+    
+    protected T getNode(int index) {
+        return tree[index];
+    }
+
 
     @Override
     public boolean isEmpty() {

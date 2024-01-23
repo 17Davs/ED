@@ -4,6 +4,8 @@
  */
 package estruturas;
 
+import java.util.Arrays;
+
 /**
  *
  * @author David Santos
@@ -15,11 +17,15 @@ package estruturas;
 public class PriorityQueue<T> extends
         ArrayHeap<PriorityQueueNode<T>> {
 
+    private PriorityQueueNode<T>[] tree;
+    private final int DEFAULT_CAPACITY = 10000;
+
     /**
      * Creates an empty priority queue.
      */
     public PriorityQueue() {
         super();
+        tree = new PriorityQueueNode[DEFAULT_CAPACITY];
     }
 
     /**
@@ -74,31 +80,45 @@ public class PriorityQueue<T> extends
     }
 
     public void update(T targetElement, int priority) throws ElementNotFoundException, EmptyCollectionException {
-        
-         if (targetElement == null) {
+
+        if (targetElement == null) {
             throw new ElementNotFoundException("elemento null");
         }
         if (isEmpty()) {
             throw new EmptyCollectionException("Empty");
         }
-        int index=-1 ;
+
+        int index = -1;
         boolean found = false;
 
+        PriorityQueueNode<T> tempPriorityQueue = new PriorityQueueNode<>(targetElement, 1000);
+
         for (int ct = 0; ct < count && !found; ct++) {
-            if (targetElement.equals(tree[ct])) {
+            if (tree[ct] != null && tempPriorityQueue != null && tempPriorityQueue.equals(copyPriorityQueueNode(tree[ct]))) {
                 found = true;
-                tree[ct]=tree[count -1];
+                tree[ct] = tree[count - 1];
                 index = ct;
             }
         }
-        
+
         heapifyRemove();
         count--;
-        
+
         addElement(targetElement, priority);
-        
+
     }
-    
+
+    private PriorityQueueNode<T> copyPriorityQueueNode(PriorityQueueNode<T> original) {
+        if (original == null) {
+            return null;
+        }
+
+        T element = original.getElement();
+        int priority = original.getPriority();
+
+        return new PriorityQueueNode<>(element, priority);
+    }
+
     private void heapifyRemove() {
         PriorityQueueNode<T> temp;
         int node = 0;
@@ -137,5 +157,15 @@ public class PriorityQueue<T> extends
             }
         }
         tree[node] = temp;
+    }
+
+    public void setPriority(T targetElement, int newPriority) {
+        try {
+            PriorityQueueNode<T> targetNode = findNode(targetElement);
+            targetNode.setPriority(newPriority);
+        } catch (ElementNotFoundException | EmptyCollectionException e) {
+            // Lide com a exceção, se necessário
+            e.printStackTrace();
+        }
     }
 }

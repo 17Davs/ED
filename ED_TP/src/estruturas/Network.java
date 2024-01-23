@@ -376,7 +376,7 @@ public class Network<T> implements NetworkADT<T> {
 
                     try {
                         // Update priority in the priority queue
-                        ((PriorityQueue) priorityQueue).update(vertices[v], (int) distances[v]);
+                        priorityQueue.update(vertices[v], (int) distances[v]);
                     } catch (ElementNotFoundException ex) {
                         Logger.getLogger(Network.class.getName()).log(Level.SEVERE, null, ex);
                     } catch (EmptyCollectionException ex) {

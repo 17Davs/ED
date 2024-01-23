@@ -257,7 +257,7 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
         } else {
             System.out.println();
             System.out.println("Padronização de bots para o jogador 1");
-            for (int b = 1; b <= numBots;) {
+            for (int b = 1; b <= jogador1.getContBots();) {
                 System.out.println("Bot numero " + b + " para o jogador 1");
                 System.out.println("======== Iterador para o bot " + b + " ========");
                 System.out.println("      1. Travessia por largura (BFS)       ");
@@ -278,7 +278,7 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
 
                             Iterator<Localidade> bfsIterator = graph.iteratorBFS(startVertex);
 
-                            jogador1.setIteradorBFSParaBot(b, numBots, bfsIterator);
+                            jogador1.setIteradorBFSParaBot(numBots, bfsIterator);
                         } else {
                             System.out.println("Erro para colocar  bot na base onde esta a flag do jogador");
                         }
@@ -294,7 +294,7 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
 
                             Iterator<Localidade> dfsIterator = graph.iteratorDFS(startVertex2);
 
-                            jogador1.setIteradorDFSParaBot(b, numBots, dfsIterator);
+                            jogador1.setIteradorDFSParaBot(numBots, dfsIterator);
                         } else {
                             System.out.println("Erro para colocar  bot na base onde esta a flag do jogador");
                         }
@@ -310,7 +310,7 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
 
                             Iterator<Localidade> shortestPathIterator = graph.iteratorShortestPath(startVertex3, targetVertex);
 
-                            jogador1.setIteradorDFSParaBot(b, numBots, shortestPathIterator);
+                            jogador1.setIteradorDFSParaBot(numBots, shortestPathIterator);
                         } else {
                             System.out.println("Erro para colocar  bot na base onde esta a flag do jogador");
                         }
@@ -323,7 +323,7 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
 
             System.out.println("\n\n");
             System.out.println("Padronização de bots para o jogador 2");
-            for (int b = 1; b <= numBots;) {
+            for (int b = 1; b <= jogador2.getContBots();) {
                 System.out.println("Bot numero " + b + " para o jogador 1");
 
                 System.out.println();
@@ -346,7 +346,7 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
 
                             Iterator<Localidade> bfsIterator = graph.iteratorBFS(startVertex);
 
-                            jogador1.setIteradorBFSParaBot(b, numBots, bfsIterator);
+                            jogador1.setIteradorBFSParaBot(numBots, bfsIterator);
                         } else {
                             System.out.println("Erro para colocar  bot na base onde esta a flag do jogador");
                         }
@@ -362,7 +362,7 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
 
                             Iterator<Localidade> dfsIterator = graph.iteratorDFS(startVertex2);
 
-                            jogador1.setIteradorDFSParaBot(b, numBots, dfsIterator);
+                            jogador1.setIteradorDFSParaBot(numBots, dfsIterator);
                         } else {
                             System.out.println("Erro para colocar  bot na base onde esta a flag do jogador");
                         }

@@ -23,7 +23,7 @@ public class Jogador {
 
     private int id;
     private static int proximoID = 0;
-    private LinkedQueue<Bot> bots;  
+    private LinkedQueue<Bot> bots;
     private Localidade base;
     Scanner scan = new Scanner(System.in);
 
@@ -50,72 +50,59 @@ public class Jogador {
         return bots;
     }
 
-    
-    public void iteratorToBot(int indiceBot, int numBots, Iterator<Localidade> iterator) throws EmptyCollectionException {
+    public void iteratorToBot(Bot bot,int numBots, Iterator<Localidade> iterator) throws EmptyCollectionException {
 
-        if (!bots.isEmpty() && indiceBot >= 0 && indiceBot < numBots) {
-            ArrayUnorderedList<Bot> tempBots = new ArrayUnorderedList<>();
 
-            // Update iterator for the desired bot
-            for (int i = 0; i < indiceBot; i++) {
-                tempBots.addToRear(bots.removeFirst());
-            }
+          
+            
+            bot.setIterator(iterator);
+            bots.enqueue(bot);
 
-            Bot botToUpdate = bots.removeFirst();
-            botToUpdate.setIterator(iterator);
-            tempBots.addToRear(botToUpdate);
+            
 
-            while (!bots.isEmpty()) {
-                tempBots.addToRear(bots.removeFirst());
-            }
-
-            bots = tempBots;
-
-            System.out.println("Iterador configurado para o Bot " + (indiceBot + 1));
-        } else {
-            System.out.println("Lista de bots vazia ou índice do bot inválido. Tente novamente.");
-        }
+            System.out.println("Iterador configurado para o Bot " + bot.getId());
+        
     }
 
-    public void setIteradorBFSParaBot(int b, int numBots, Iterator iteratorBFS) {
+    public void setIteradorBFSParaBot(int numBots, Iterator iteratorBFS) {
         try {
-            System.out.println("Setting BFS iterator for Bot " + b);
-            iteratorToBot(b - 1, numBots, iteratorBFS);
-            System.out.println("Iterador BFS configurado para o Bot " + b);
+            Bot bot = bots.dequeue();
+            System.out.println("Atribuindo o iterador BFS para o Bot " + bot.getId());
+            iteratorToBot(bot, numBots, iteratorBFS);
         } catch (EmptyCollectionException e) {
-            System.out.println("Erro ao configurar o iterador para o Bot " + b);
+            System.out.println("Erro ao configurar o iterador para o Bot ");
             e.printStackTrace();
         }
     }
 
-
-    public void setIteradorDFSParaBot(int b, int numBots, Iterator iteratorDFS) {
+    public void setIteradorDFSParaBot(int numBots, Iterator iteratorDFS) {
         try {
-            System.out.println("Setting DFS iterator for Bot " + b);
-            iteratorToBot(b - 1, numBots, iteratorDFS);
-            System.out.println("Iterador DFS configurado para o Bot " + b);
+            Bot bot = bots.dequeue();
+            System.out.println("Atribuindo o iterador DFS para o Bot " + bot.getId());
+            iteratorToBot(bot, numBots, iteratorDFS);
         } catch (EmptyCollectionException e) {
-            System.out.println("Erro ao configurar o iterador para o Bot " + b);
+            System.out.println("Erro ao configurar o iterador para o Bot ");
             e.printStackTrace();
         }
     }
 
     public void setIteradorShortestPathParaBot(int b, int numBots, Iterator iteratorShortestPath) {
-        try {
-            System.out.println("Setting Shortest Path iterator for Bot " + b);
-            iteratorToBot(b - 1, numBots, iteratorShortestPath);
-            System.out.println("Iterador ShortestPath configurado para o Bot " + b);
+       try {
+            Bot bot = bots.dequeue();
+            System.out.println("Atribuindo o iterador Shortest Path para o Bot " + bot.getId());
+            iteratorToBot(bot, numBots, iteratorShortestPath);
         } catch (EmptyCollectionException e) {
-            System.out.println("Erro ao configurar o iterador para o Bot " + b);
+            System.out.println("Erro ao configurar o iterador para o Bot ");
             e.printStackTrace();
         }
     }
 
-    
     public void adicionarBot(Bot bot) {
         bots.enqueue(bot);
     }
     
-    
-    
+    public int getContBots () {
+        return bots.size();
+    }
+
 }

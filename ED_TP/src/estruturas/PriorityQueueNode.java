@@ -4,6 +4,8 @@
  */
 package estruturas;
 
+import java.util.Objects;
+
 /**
  * PriorityQueueNode represents a node in a priority queue containing a
  * comparable object, order, and a priority value.
@@ -47,6 +49,10 @@ public class PriorityQueueNode<T> implements
     public int getPriority() {
         return priority;
     }
+    public void setPriority(int priority) {
+        this.priority = priority;
+    }
+
 
     /**
      * Returns the order for this node.
@@ -87,4 +93,24 @@ public class PriorityQueueNode<T> implements
         }
         return result;
     }
+
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final PriorityQueueNode<?> other = (PriorityQueueNode<?>) obj;
+        return Objects.equals(this.element, other.element);
+    }
+
+    
+    
+    
 }

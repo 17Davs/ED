@@ -15,6 +15,8 @@ public class Bot {
     protected Iterator<Localidade> itr;
     protected StackADT<Localidade> stack;
     protected Localidade local;
+    private int id;
+    private static int proximoID = 0;
     
     public void setIterator(Iterator<Localidade> iterator) {
         this.itr = iterator;
@@ -34,8 +36,13 @@ public class Bot {
     }
 
     public Bot() {
-        
+        id = ++proximoID;
     }
+
+    public int getId() {
+        return id;
+    }
+    
     
     
     
