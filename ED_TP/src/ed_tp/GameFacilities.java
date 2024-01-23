@@ -15,17 +15,12 @@ import estruturas.LinkedStack;
 import estruturas.Mapa;
 import interfacesADT.QueueADT;
 import java.util.Iterator;
-import java.util.LinkedList;
+
 import java.util.Random;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 
 /**
- *
- * @author Utilizador
+ * Classe responsavel por gerir e organizar as funcionalidades do jogo
  */
 public class GameFacilities<T> implements GameFacilitiesInterface<T> {
 
@@ -53,6 +48,14 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
         this.graph = new Mapa<>();
     }
 
+    /*
+    Este metodo vai ser usado para cada Jogador definir a sua Flag numa localidade(vertice) do mapa(grafo)
+    onde vai guardar todos os vertices num array de Object e depois vai copia-los para
+    um array de localidades. Apos isso apresenta todo o conteudo do array localidades e cada jogador vai escolher o indice 
+    da localidade onde deseja colocar a sua flag sendo que duas flags nao podem ficar na mesma localidade
+    
+    @param jogador Vai armazenar qual jogador vai definir a sua flag
+     */
     public void criarFlags(Jogador jogador) {
 
         // Array de localidedes 
@@ -101,6 +104,12 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
 
     }
 
+    /*
+    Este metodo tera como funcionalidade a criaçao de um mapa, onde
+    teremos de colocar as especificaçoes do mapa a ser criado adicionando todas as as
+    localidades(vertices) num array Temporario do tipo localidade. Apos especificar todas as caracteristicas do mapa 
+    temos a opcao de guardar o mapa ou de apenas jogar., onde guardar vai guardar num ficheiro JSON.
+     */
     @Override
     public void criarMapa() {
 
@@ -172,8 +181,6 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
 
                         switch (opcao) {
                             case 1:
-
-                                //certificar se fica bem dentro do ciclo isConnected()
                                 while (contador < numArestas) {
 
                                     int peso = 1 + (15 - 1) * random.nextInt();
@@ -231,6 +238,13 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
 
     }
 
+    /*
+    Este metodo é responsavel por definir qual o iterador cada Bot de cada Jogador 
+    ira seguir para encontrar a flag adversaria no mapa.
+    Onde aqui vamos adicionar os dois jogadores na Queue onde foi definido uma 
+    queue que so admite o tipo Jogador e definir a Flag de cada um
+    no mapa. Apos isso so entra num loop para definir o iterador de cada Bot
+     */
     void padronizarBots() throws EmptyCollectionException {
         int opcao = 0;
         int numIterators = 3;
@@ -289,7 +303,6 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
 
                             if (startVertex != null) {
                                 Iterator<Localidade> bfsIterator = graph.iteratorBFS(startVertex);
-
                                 try {
                                     System.out.println("Atribuindo o iterador BFS para o Bot " + bot.getId());
                                     jogadorAtual.iteratorToBot(bot, bfsIterator);
@@ -297,6 +310,7 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
                                 } catch (EmptyCollectionException ex) {
 
                                 }
+
                             } else {
                                 System.out.println("Erro para colocar  bot na base onde esta a flag do jogador");
                             }
@@ -419,7 +433,7 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
                         System.out.println("A ordem de prioridade é: Shortest Path, BFS, DFS");
                         break;
                 }
-
+                System.out.println("");
                 //criação dos bots
                 for (int i = 0; i < numBots; i++) {
                     Iterator<Localidade> iterador = iteradoeres.dequeue();
@@ -437,6 +451,10 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
         oJogo();
     }
 
+    /*
+    Este metodo tera como funcionalidade receber qual estrategia vamos adotar
+    para os nossos bots num mapa especifico e tambem tem a funcionalidade de mostrar o Mapa
+     */
     void iniciarJogo() {
 
         int opcao = 0;
@@ -455,6 +473,7 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
             opcao = scan.nextInt();
 
             switch (opcao) {
+
                 case 1: 
                     try {
                     padronizarBots();
@@ -472,6 +491,13 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
 
     }
 
+    /*
+    Este metodo sera o responsavel pela interacao com o jogo capture the flag,
+    onde tera os queues de jogador para determinar é a vez de qual jogador jogar e
+    tera a queue de Bots que sera preenchida alternadamente entre os bots dos dois jogadores,
+    assim que um bot de um jogador jogar este metodo faz dequeue e enqueue tanto na fila de jogadores
+    quanto na fila de bots
+     */
     public void oJogo() throws EmptyCollectionException {
         System.out.println("\n\n");
         System.out.println("======================================");
@@ -569,7 +595,16 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
         System.out.println("======================================");
     }
 
-    void whoPlays(Jogador jogador1, Jogador jogador2) {
+    /*
+    Este metodo define de forma aleatoria qual jogador
+    ira jogar primeiro assim adicionando na queue os jogadores por 
+    ordem de jogo.
+    
+    @param jogador1 Instancia da classe jogador que vai iniciar a partida
+    @param jogador2 Instancia da classe jogador que vai iniciar a partida
+     */
+    void whoPlays(Jogador jogador1, Jogador jogador2
+    ) {
 
         int randomNum = random.nextInt(jogador2.getId() - jogador1.getId()) + jogador1.getId();
 
