@@ -46,6 +46,7 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
     }
 
     public void criarFlags(Jogador jogador) {
+
         Object[] vertices = graph.getVertexes();
 
         // Converte o array de objetos para um array de Localidade manualmente
@@ -445,6 +446,48 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
 
     }
 
-    
+    public static void main(String[] args) {
+
+        Scanner scan = new Scanner(System.in);
+        int opcao = 0;
+        GameFacilities game = new GameFacilities<>();
+        Mapa map = new Mapa<>();
+        String currentWorkingDir = System.getProperty("user.dir");
+        String nMapa;
+
+        do {
+            System.out.println();
+            System.out.println("======== Capture the flag ========");
+            System.out.println("    1. Criaçao de um novo mapa    ");
+            System.out.println("     2. Importação de um mapa     ");
+            System.out.println("         0. Sair do jogo          ");
+            System.out.println("==================================");
+
+            System.out.print("Introduza sua opcao por favor:");
+            opcao = scan.nextInt();
+
+            switch (opcao) {
+                case 1:
+                    System.out.println("Criação de um mapa novo!");
+                    game.criarMapa();
+                    game.iniciarJogo();
+                    break;
+                case 2:
+                    System.out.println("Importação de um mapa!");
+                    System.out.print("Introduza o nome do mapa:");
+                    nMapa = scan.next();
+                    game.nomeMapa = nMapa;
+                    Mapa.importJSON(currentWorkingDir + "/src/Files/" + nMapa + ".json");
+                    game.iniciarJogo();
+                    break;
+                case 0:
+                    System.out.println("Fechando o jogo!");
+                    break;
+                default:
+                    System.out.print("Opção inválida introduza novamente a sua opção:");
+                    break;
+            }
+        } while (opcao != 0);
+    }
 
 }

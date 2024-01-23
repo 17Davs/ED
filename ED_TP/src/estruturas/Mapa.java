@@ -86,7 +86,6 @@ public class Mapa<T> extends Network<T> {
 
             JSONArray LocalidadesArray = (JSONArray) jsonObject.get("Localidades");
             for (int i = 0; i < LocalidadesArray.size(); i++) {
-                // Adicione seus vértices ao grafo, dependendo da estrutura do JSON
                 JSONObject localidadeJson = (JSONObject) LocalidadesArray.get(i);
                 String nome = (String) localidadeJson.get("Nome");
                 Localidade localidade = new Localidade(nome);
@@ -146,8 +145,4 @@ public class Mapa<T> extends Network<T> {
 
 }
 
-// Exemplo de uso com o objeto JSON fornecido
-//    String jsonString = "o JSON fornecido";
-//
-//    showMapaFromJSON(jsonString);
 
