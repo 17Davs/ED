@@ -49,53 +49,19 @@ public class Jogador {
     public LinkedQueue<Bot> getBots() {
         return bots;
     }
+    
+    public Bot getNextBot() throws EmptyCollectionException{
+        return bots.dequeue();
+    }
+    
+    public void iteratorToBot(Bot bot,Iterator<Localidade> iterator) throws EmptyCollectionException {
 
-    public void iteratorToBot(Bot bot,int numBots, Iterator<Localidade> iterator) throws EmptyCollectionException {
-
-
-          
-            
             bot.setIterator(iterator);
             bots.enqueue(bot);
-
             
-
-            System.out.println("Iterador configurado para o Bot " + bot.getId());
         
     }
 
-    public void setIteradorBFSParaBot(int numBots, Iterator iteratorBFS) {
-        try {
-            Bot bot = bots.dequeue();
-            System.out.println("Atribuindo o iterador BFS para o Bot " + bot.getId());
-            iteratorToBot(bot, numBots, iteratorBFS);
-        } catch (EmptyCollectionException e) {
-            System.out.println("Erro ao configurar o iterador para o Bot ");
-            e.printStackTrace();
-        }
-    }
-
-    public void setIteradorDFSParaBot(int numBots, Iterator iteratorDFS) {
-        try {
-            Bot bot = bots.dequeue();
-            System.out.println("Atribuindo o iterador DFS para o Bot " + bot.getId());
-            iteratorToBot(bot, numBots, iteratorDFS);
-        } catch (EmptyCollectionException e) {
-            System.out.println("Erro ao configurar o iterador para o Bot ");
-            e.printStackTrace();
-        }
-    }
-
-    public void setIteradorShortestPathParaBot(int b, int numBots, Iterator iteratorShortestPath) {
-       try {
-            Bot bot = bots.dequeue();
-            System.out.println("Atribuindo o iterador Shortest Path para o Bot " + bot.getId());
-            iteratorToBot(bot, numBots, iteratorShortestPath);
-        } catch (EmptyCollectionException e) {
-            System.out.println("Erro ao configurar o iterador para o Bot ");
-            e.printStackTrace();
-        }
-    }
 
     public void adicionarBot(Bot bot) {
         bots.enqueue(bot);

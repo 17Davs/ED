@@ -222,11 +222,11 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
 
     }
 
-    void padronizarBots() {
+    void padronizarBots() throws EmptyCollectionException {
         int opcao = 0;
         int numBots = 0;
         int numIterators = 3;
-
+        Bot bot = null;
         do {
             System.out.print("Introduza o numero de bots para cada jogador: ");
             numBots = scan.nextInt();
@@ -235,15 +235,13 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
         Jogador jogador1 = new Jogador(numBots);
         Jogador jogador2 = new Jogador(numBots);
 
-        for (int i = 1; i <= numBots; i++) {
-            Bot bot = new Bot();
-            jogador1.adicionarBot(bot);
+        //garantir estar vazio
+        while (!jogadores.isEmpty()) {
+            jogadores.dequeue();
         }
-
-        for (int i = 1; i <= numBots; i++) {
-            Bot bot = new Bot();
-            jogador2.adicionarBot(bot);
-        }
+        //adicionar os nossos jogadores
+        jogadores.enqueue(jogador1);
+        jogadores.enqueue(jogador2);
 
         System.out.println();
         System.out.println("Flag jogador 1");
@@ -255,137 +253,92 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
         if (numBots < numIterators) {
             //random
         } else {
-            System.out.println();
-            System.out.println("Padronização de bots para o jogador 1");
-            for (int b = 1; b <= jogador1.getContBots();) {
-                System.out.println("Bot numero " + b + " para o jogador 1");
-                System.out.println("======== Iterador para o bot " + b + " ========");
-                System.out.println("      1. Travessia por largura (BFS)       ");
-                System.out.println("    2. Travessia por profundidade (DFS)    ");
-                System.out.println("            3. Shortest Path               ");
-                System.out.println("===========================================");
-
-                System.out.println("Introduza sua opcao: ");
-                opcao = scan.nextInt();
-
-                switch (opcao) {
-                    case 1:
-                        System.out.println("Foi escolhido a travessia BFS para o bot " + b);
-
-                        Localidade startVertex = jogador1.getBase();
-
-                        if (startVertex != null) {
-
-                            Iterator<Localidade> bfsIterator = graph.iteratorBFS(startVertex);
-
-                            jogador1.setIteradorBFSParaBot(numBots, bfsIterator);
-                        } else {
-                            System.out.println("Erro para colocar  bot na base onde esta a flag do jogador");
-                        }
-                        b++;
-                        break;
-
-                    case 2:
-                        System.out.println("Foi escolhido a travessia DFS para o bot" + b);
-
-                        Localidade startVertex2 = jogador1.getBase();
-
-                        if (startVertex2 != null) {
-
-                            Iterator<Localidade> dfsIterator = graph.iteratorDFS(startVertex2);
-
-                            jogador1.setIteradorDFSParaBot(numBots, dfsIterator);
-                        } else {
-                            System.out.println("Erro para colocar  bot na base onde esta a flag do jogador");
-                        }
-                        b++;
-                        break;
-                    case 3:
-                        System.out.println("Foi escolhido a travessia Shortest Path para o bot" + b);
-
-                        Localidade startVertex3 = jogador1.getBase();
-                        Localidade targetVertex = jogador1.getBase();
-
-                        if (startVertex3 != null && targetVertex != null) {
-
-                            Iterator<Localidade> shortestPathIterator = graph.iteratorShortestPath(startVertex3, targetVertex);
-
-                            jogador1.setIteradorDFSParaBot(numBots, shortestPathIterator);
-                        } else {
-                            System.out.println("Erro para colocar  bot na base onde esta a flag do jogador");
-                        }
-                        b++;
-
-                        break;
-                }
-
-            }
-
-            System.out.println("\n\n");
-            System.out.println("Padronização de bots para o jogador 2");
-            for (int b = 1; b <= jogador2.getContBots();) {
-                System.out.println("Bot numero " + b + " para o jogador 1");
-
+            for (int vezes = 0; vezes < jogadores.size(); vezes++) {
+                jogadorAtual = jogadores.dequeue();
                 System.out.println();
-                System.out.println("======== Iterador para o bot " + b + " ========");
-                System.out.println("      1. Travessia por largura (BFS)       ");
-                System.out.println("    2. Travessia por profundidade (DFS)    ");
-                System.out.println("            3. Shortest Path               ");
-                System.out.println("===========================================");
+                System.out.println("Padronização de bots para o jogador " + jogadorAtual.getId());
+                for (int b = 1; b <= numBots;) {
+                    bot = new Bot();
+                    System.out.println("Bot numero " + bot.getId() + " para o jogador 1");
+                    System.out.println("======== Iterador para o bot " + bot.getId() + " ========");
+                    System.out.println("      1. Travessia por largura (BFS)       ");
+                    System.out.println("    2. Travessia por profundidade (DFS)    ");
+                    System.out.println("            3. Shortest Path               ");
+                    System.out.println("===========================================");
 
-                System.out.println("Introduza sua opcao: ");
-                opcao = scan.nextInt();
+                    System.out.println("Introduza sua opcao: ");
+                    opcao = scan.nextInt();
 
-                switch (opcao) {
-                    case 1:
-                        System.out.println("Foi escolhido a travessia BFS para o bot " + b);
+                    Localidade startVertex = jogadorAtual.getBase();
+                    switch (opcao) {
+                        case 1:
+                            System.out.println("Foi escolhido a travessia BFS para o bot " + b);
 
-                        Localidade startVertex = jogador1.getBase();
+                            if (startVertex != null) {
+                                Iterator<Localidade> bfsIterator = graph.iteratorBFS(startVertex);
 
-                        if (startVertex != null) {
+                                try {
+                                    System.out.println("Atribuindo o iterador BFS para o Bot " + bot.getId());
+                                    jogadorAtual.iteratorToBot(bot, bfsIterator);
+                                    System.out.println("Iterador configurado para o Bot " + bot.getId());
+                                } catch (EmptyCollectionException ex) {
 
-                            Iterator<Localidade> bfsIterator = graph.iteratorBFS(startVertex);
+                                }
+                            } else {
+                                System.out.println("Erro para colocar  bot na base onde esta a flag do jogador");
+                            }
+                            b++;
+                            break;
 
-                            jogador1.setIteradorBFSParaBot(numBots, bfsIterator);
-                        } else {
-                            System.out.println("Erro para colocar  bot na base onde esta a flag do jogador");
-                        }
-                        b++;
-                        break;
+                        case 2:
+                            System.out.println("Foi escolhido a travessia DFS para o bot" + b);
 
-                    case 2:
-                        System.out.println("Foi escolhido a travessia DFS para o bot" + b);
+                            if (startVertex != null) {
 
-                        Localidade startVertex2 = jogador1.getBase();
+                                Iterator<Localidade> dfsIterator = graph.iteratorDFS(startVertex);
 
-                        if (startVertex2 != null) {
+                                try {
+                                    System.out.println("Atribuindo o iterador DFS para o Bot " + bot.getId());
+                                    jogadorAtual.iteratorToBot(bot, dfsIterator);
+                                    System.out.println("Iterador configurado para o Bot " + bot.getId());
+                                } catch (EmptyCollectionException ex) {
 
-                            Iterator<Localidade> dfsIterator = graph.iteratorDFS(startVertex2);
+                                }
+                            } else {
+                                System.out.println("Erro para colocar  bot na base onde esta a flag do jogador");
+                            }
+                            b++;
+                            break;
+                        case 3:
+                            System.out.println("Foi escolhido a travessia Shortest Path para o bot" + b);
+                            Localidade targetVertex = null;
+                            if (jogadorAtual.equals(jogador1)) {
+                                targetVertex = jogador2.getBase();
+                            } else {
+                                targetVertex = jogador1.getBase();
+                            }
 
-                            jogador1.setIteradorDFSParaBot(numBots, dfsIterator);
-                        } else {
-                            System.out.println("Erro para colocar  bot na base onde esta a flag do jogador");
-                        }
-                        b++;
-                        break;
-                    case 3:
-                        System.out.println("Foi escolhido a travessia Shortest Path para o bot" + b);
+                            if (startVertex != null && targetVertex != null) {
 
-                        Localidade startVertex3 = jogador1.getBase();
-                        Localidade targetVertex = jogador2.getBase();
+                                Iterator<Localidade> shortestPathIterator = graph.iteratorShortestPath(startVertex, targetVertex);
 
-                        if (startVertex3 != null && targetVertex != null) {
+                                try {
+                                    System.out.println("Atribuindo o iterador Shortest Path para o Bot " + bot.getId());
+                                    jogadorAtual.iteratorToBot(bot, shortestPathIterator);
+                                    System.out.println("Iterador configurado para o Bot " + bot.getId());
+                                } catch (EmptyCollectionException ex) {
 
-                            Iterator<Localidade> shortestPathIterator = graph.iteratorShortestPath(startVertex3, targetVertex);
+                                }
+                            } else {
+                                System.out.println("Erro para colocar  bot na base onde esta a flag do jogador");
+                            }
+                            b++;
 
-                            jogador1.setIteradorShortestPathParaBot(b, numBots, shortestPathIterator);
-                        } else {
-                            System.out.println("Erro para colocar  bot na base onde esta a flag do jogador");
-                        }
-                        b++;
-                        break;
+                            break;
+                    }
                 }
-
+                //meter na fila novamente
+                jogadores.enqueue(jogadorAtual);
             }
 
         }
@@ -410,8 +363,15 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
 
             switch (opcao) {
                 case 1:
-                    padronizarBots();
+                {
+                    try {
+                        padronizarBots();
+                    } catch (EmptyCollectionException ex) {
+                        Logger.getLogger(GameFacilities.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
                     break;
+
                 case 2:
                     graph.showMapaFromJSON(currentWorkingDir + "/src/Files/" + nomeMapa + ".json");
 
@@ -421,37 +381,39 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
         } while (opcao != 0);
 
     }
-    
-    
-    
-    public void oJogo(Jogador jogador1, Jogador jogador2){
-        boolean exit =true;
-        int numJogadas=0;
+
+    public void oJogo() throws EmptyCollectionException {
+        boolean exit = true;
+        int numJogadas = 0;
         
-//        while (!exit){
-//            //cada jogada
-//            while(!jogadores.isEmpty()){
-//                jogadorAtual = jogadores.dequeue();
-//                //fazer dequeue do proximo bot
-//               // Bot bot = jogadorAtual.getNextBot();
-//                
-//                Iterator<Localidade> itr = bot.getItr();
-//                if (itr.hasNext()){
-//                    Localidade local = itr.next();
-//                    if(local.isOcupada() && local.getFlag()!=null){
-//                        //logica se estiver ocupada
-//                        
-//                    } else if(local.isOcupada() && local.getFlag()==null){
-//                        //não pode ir para ali
-//                        //opcao esperar, 
-//                    }
-//                }
-//                
-//                
-//                jogadores.enqueue(jogadorAtual);
-//            }
-//        }
-        
+        //fazer aleatorio
+        if (jogadores.size()==2) {
+            whoPlays(jogadores.dequeue(), jogadores.dequeue());
+        }
+
+        while (!exit) {
+            //cada jogada
+            while (!jogadores.isEmpty()) {
+                jogadorAtual = jogadores.dequeue();
+                //fazer dequeue do proximo bot
+                Bot bot = jogadorAtual.getNextBot();
+
+                Iterator<Localidade> itr = bot.getItr();
+                if (itr.hasNext()) {
+                    Localidade local = itr.next();
+                    if (local.isOcupada() && local.getFlag() != null) {
+                        //logica se estiver ocupada
+
+                     } else if (local.isOcupada() && local.getFlag() == null) {
+                        //não pode ir para ali
+                        //opcao esperar, 
+                    }
+                }
+
+                jogadores.enqueue(jogadorAtual);
+            }
+        }
+
     }
 
     void whoPlays(Jogador jogador1, Jogador jogador2) {
@@ -501,7 +463,7 @@ public class GameFacilities<T> implements GameFacilitiesInterface<T> {
                     System.out.print("Introduza o nome do mapa:");
                     nMapa = scan.next();
                     game.nomeMapa = nMapa;
-                    game.graph= Mapa.importJSON(currentWorkingDir + "/src/Files/" + nMapa + ".json");
+                    game.graph = Mapa.importJSON(currentWorkingDir + "/src/Files/" + nMapa + ".json");
 
                     game.iniciarJogo();
                     break;
